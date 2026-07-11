@@ -54,6 +54,11 @@ const DEFAULT_DATA = {
     { name: 'MikroTik',  logo: null },
     { name: 'Hikvision', logo: null },
   ],
+  certificates: [
+    { title: 'Cisco Certified Network Associate', issuer: 'Cisco', year: '2024', category: 'Networking', color: '#0D8ABC', image: null },
+    { title: 'MikroTik Certified Network Associate', issuer: 'MikroTik', year: '2023', category: 'Networking', color: '#D93025', image: null },
+    { title: 'CompTIA Security+', issuer: 'CompTIA', year: '2023', category: 'Security', color: '#E8A838', image: null },
+  ],
   testimonials: [
     {
       name:  'Budi Santoso',
@@ -304,6 +309,9 @@ function populateForms() {
 
   // Testimonials
   renderTestimonials();
+
+  // Certificates
+  renderCertificates();
 }
 
 function setVal(id, val) {
@@ -799,6 +807,143 @@ function init() {
 }
 
 init();
+
+// ============================================================
+// CERTIFICATES ADMIN
+// ============================================================
+function renderCertificates() {
+  if (!data.certificates) data.certificates = [];
+  const list = document.getElementById('cert-list');
+  if (!list) return;
+  list.innerHTML = '';
+  data.certificates.forEach((cert, idx) => {
+    list.appendChild(createCertRow(cert, idx));
+  });
+}
+
+function createCertRow(cert, idx) {
+  cert = cert || {};
+  const row = document.createElement('div');
+  row.className = 'cert-admin-row';
+  row.dataset.idx = idx;
+
+  // Hidden file input
+  const fileInput = document.createElement('input');
+  fileInput.type   = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.style.display = 'none';
+  row.appendChild(fileInput);
+
+  row.innerHTML += `
+    <!-- Gambar preview sertifikat -->
+    <div class="cert-admin-img-area">
+      <div class="cert-admin-preview" title="Klik upload gambar sertifikat">
+        ${cert.image
+          ? `<img src="${cert.image}" alt="${escapeHtml(cert.title||'')}" draggable="false" data-no-protect="true" />`
+          : `<span class="cert-admin-no-img">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>`}
+      </div>
+      <div class="cert-admin-img-btns">
+        <button class="btn-upload-logo" type="button">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload
+        </button>
+        ${cert.image ? '<button class="btn-remove-logo" type="button" title="Hapus Gambar">✕</button>' : ''}
+      </div>
+    </div>
+
+    <!-- Fields -->
+    <div class="cert-admin-fields">
+      <div class="cert-admin-row-top">
+        <input type="text" class="cert-title-input" value="${escapeHtml(cert.title||'')}" placeholder="Nama / Judul Sertifikat" />
+        <input type="text" class="cert-category-input" value="${escapeHtml(cert.category||'')}" placeholder="Kategori (mis: Networking)" style="max-width:160px"/>
+      </div>
+      <div class="cert-admin-row-bottom">
+        <input type="text" class="cert-issuer-input" value="${escapeHtml(cert.issuer||'')}" placeholder="Penerbit / Lembaga" />
+        <input type="text" class="cert-year-input" value="${escapeHtml(cert.year||'')}" placeholder="Tahun" style="max-width:80px"/>
+        <input type="color" class="cert-color-input" value="${cert.color||'#2563EB'}" title="Warna badge (jika tidak ada gambar)" style="width:36px;height:36px;padding:2px;border-radius:6px;cursor:pointer;border:1px solid var(--border)"/>
+      </div>
+    </div>
+
+    <!-- Hapus -->
+    <button class="btn-remove" type="button" title="Hapus sertifikat">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+    </button>
+  `;
+
+  // ---- Events ----
+  const getCert = () => data.certificates[idx] || (data.certificates[idx] = {});
+
+  row.querySelector('.cert-title-input').addEventListener('input',    e => { getCert().title    = e.target.value; });
+  row.querySelector('.cert-category-input').addEventListener('input', e => { getCert().category = e.target.value; });
+  row.querySelector('.cert-issuer-input').addEventListener('input',   e => { getCert().issuer   = e.target.value; });
+  row.querySelector('.cert-year-input').addEventListener('input',     e => { getCert().year     = e.target.value; });
+  row.querySelector('.cert-color-input').addEventListener('input',    e => { getCert().color    = e.target.value; });
+
+  row.querySelector('.btn-remove').addEventListener('click', () => {
+    data.certificates.splice(idx, 1);
+    renderCertificates();
+  });
+
+  // Upload gambar sertifikat (600×420px, WebP q0.85)
+  const preview  = row.querySelector('.cert-admin-preview');
+  const uploadBtn = row.querySelector('.btn-upload-logo');
+  preview.addEventListener('click', () => fileInput.click());
+  uploadBtn.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    uploadBtn.textContent = '⏳';
+    uploadBtn.disabled = true;
+    try {
+      const webp = await fileToWebP(file, 600, 420, 0.85);
+      getCert().image = webp;
+      preview.innerHTML = `<img src="${webp}" alt="Sertifikat" draggable="false" data-no-protect="true" />`;
+      // Tambah tombol hapus gambar
+      const imgBtns = row.querySelector('.cert-admin-img-btns');
+      if (!imgBtns.querySelector('.btn-remove-logo')) {
+        const rm = document.createElement('button');
+        rm.className = 'btn-remove-logo'; rm.type = 'button'; rm.title = 'Hapus Gambar'; rm.textContent = '✕';
+        imgBtns.appendChild(rm);
+        rm.addEventListener('click', () => removeCertImg(row, idx));
+      }
+      showToast('✅ Gambar sertifikat dikonversi ke WebP (600×420px)', 'success');
+    } catch (err) {
+      showToast('❌ Gagal upload: ' + err, 'error');
+    } finally {
+      uploadBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload`;
+      uploadBtn.disabled = false;
+    }
+  });
+
+  const rmLogoBtn = row.querySelector('.btn-remove-logo');
+  if (rmLogoBtn) rmLogoBtn.addEventListener('click', () => removeCertImg(row, idx));
+
+  // Drag input tidak trigger drag
+  row.querySelectorAll('input, button').forEach(el => {
+    el.addEventListener('mousedown', e => e.stopPropagation());
+  });
+
+  return row;
+}
+
+function removeCertImg(row, idx) {
+  if (data.certificates[idx]) data.certificates[idx].image = null;
+  const preview = row.querySelector('.cert-admin-preview');
+  preview.innerHTML = `<span class="cert-admin-no-img"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>`;
+  const rm = row.querySelector('.btn-remove-logo');
+  if (rm) rm.remove();
+}
+
+document.getElementById('add-cert-btn')?.addEventListener('click', () => {
+  if (!data.certificates) data.certificates = [];
+  data.certificates.push({ title: '', issuer: '', year: '', category: '', color: '#2563EB', image: null });
+  renderCertificates();
+  const rows = document.querySelectorAll('#cert-list .cert-admin-row');
+  if (rows.length) rows[rows.length - 1].querySelector('.cert-title-input')?.focus();
+});
 
 // ============================================================
 // WATERMARK ADMIN PANEL

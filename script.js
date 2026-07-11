@@ -184,6 +184,7 @@
   // ---- 6. TESTIMONIALS ----
   if (cms.testimonials && cms.testimonials.length > 0) {
     window._CMS_TESTIMONIALS = cms.testimonials;
+    window._CMS_CERTIFICATES = cms.certificates || [];
   }
 
   // ---- Store cms globally for other functions to access ----
@@ -203,6 +204,7 @@ const TRANSLATIONS = {
     nav_services: 'Layanan',
     nav_about: 'Tentang',
     nav_portfolio: 'Portofolio',
+    nav_certifications: 'Sertifikat',
     nav_testimonials: 'Testimoni',
     nav_contact: 'Kontak',
     nav_cta: 'Hubungi Kami',
@@ -280,6 +282,9 @@ const TRANSLATIONS = {
     t4_role: 'CTO, PT Tech Nusantara',
     partners_badge: 'REKANAN',
     partners_title: 'Partner & Rekanan Kami',
+    cert_badge: 'SERTIFIKASI',
+    cert_title: 'Sertifikat & Keahlian Kami',
+    cert_desc: 'Bukti kompetensi tim kami yang tersertifikasi resmi dari lembaga internasional terpercaya.',
     contact_badge: 'KONTAK',
     contact_title: 'Hubungi Kami Sekarang',
     contact_desc: 'Dapatkan konsultasi gratis dan solusi terbaik untuk kebutuhan IT bisnis Anda.',
@@ -384,6 +389,9 @@ const TRANSLATIONS = {
     t4_role: 'CTO, PT Tech Nusantara',
     partners_badge: 'PARTNERS',
     partners_title: 'Our Partners & Affiliates',
+    cert_badge: 'CERTIFICATIONS',
+    cert_title: 'Our Certifications & Expertise',
+    cert_desc: 'Proof of our team competence officially certified by trusted international institutions.',
     contact_badge: 'CONTACT',
     contact_title: 'Contact Us Now',
     contact_desc: 'Get a free consultation and the best solution for your business IT needs.',
@@ -433,6 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initParticles();
   initCounters();
   initTestimonials();
+  initCertifications();
   initPortfolioFilter();
   initContactForm();
   initActiveNavLinks();
@@ -765,6 +774,127 @@ function initTestimonials() {
   window.addEventListener('resize', () => goToTesti(testitCurrent), { passive: true });
 }
 
+
+
+
+/* ============================================================
+   12B. CERTIFICATIONS — Render from CMS + Lightbox
+   ============================================================ */
+function initCertifications() {
+  const certs = window._CMS_CERTIFICATES || (window._CMS_DATA && window._CMS_DATA.certificates);
+  const grid  = document.getElementById('cert-grid');
+  if (!grid) return;
+
+  // Render dari CMS jika ada data sertifikat
+  if (certs && certs.length > 0) {
+    grid.innerHTML = certs.map((cert, i) => buildCertCard(cert, i)).join('');
+  }
+
+  // Init lightbox pada semua card (CMS atau default HTML)
+  grid.querySelectorAll('.cert-card').forEach((card) => {
+    // Untuk default HTML cards, ambil data dari DOM
+    if (!card.dataset.certTitle) {
+      const nameEl    = card.querySelector('.cert-name');
+      const issuerEl  = card.querySelector('.cert-issuer');
+      const yearEl    = card.querySelector('.cert-year');
+      const categoryEl= card.querySelector('.cert-category');
+      const imgEl     = card.querySelector('img');
+      card.dataset.certTitle    = nameEl?.textContent    || '';
+      card.dataset.certIssuer   = issuerEl?.textContent  || '';
+      card.dataset.certYear     = yearEl?.textContent    || '';
+      card.dataset.certCategory = categoryEl?.textContent|| '';
+      card.dataset.certImg      = imgEl?.src             || '';
+    }
+    card.addEventListener('click', () => openLightbox(card));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(card); }
+    });
+  });
+
+  // Lightbox controls
+  const lb      = document.getElementById('cert-lightbox');
+  const lbClose = document.getElementById('cert-lightbox-close');
+  const lbBack  = lb?.querySelector('.cert-lightbox-backdrop');
+
+  lbClose?.addEventListener('click', closeLightbox);
+  lbBack?.addEventListener('click',  closeLightbox);
+  // ESC hanya jika belum ditambahkan
+  if (!lb?.dataset.escBound) {
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+    if (lb) lb.dataset.escBound = '1';
+  }
+}
+
+function buildCertCard(cert, i) {
+  const imgHtml = cert.image
+    ? `<img src="${cert.image}" alt="${cert.title}" draggable="false" data-no-protect="true" loading="lazy" />`
+    : `<div class="cert-img-placeholder" style="${cert.color ? `--cert-color:${cert.color}` : ''}">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>`;
+  return `
+    <article class="cert-card" tabindex="0" role="button"
+      aria-label="${cert.title}"
+      data-cert-title="${cert.title || ''}"
+      data-cert-issuer="${cert.issuer || ''}"
+      data-cert-year="${cert.year || ''}"
+      data-cert-category="${cert.category || ''}"
+      data-cert-img="${cert.image || ''}">
+      <div class="cert-img-wrap">
+        ${imgHtml}
+        <div class="cert-verified" aria-label="Terverifikasi">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+      <div class="cert-info">
+        ${cert.category ? `<span class="cert-category">${cert.category}</span>` : ''}
+        <h3 class="cert-name">${cert.title || ''}</h3>
+        <div class="cert-meta">
+          <span class="cert-issuer">${cert.issuer || ''}</span>
+          ${cert.year ? `<span class="cert-year">${cert.year}</span>` : ''}
+        </div>
+      </div>
+    </article>`;
+}
+
+function openLightbox(card) {
+  const lb = document.getElementById('cert-lightbox');
+  if (!lb) return;
+
+  const img      = card.dataset.certImg;
+  const title    = card.dataset.certTitle;
+  const issuer   = card.dataset.certIssuer;
+  const year     = card.dataset.certYear;
+  const category = card.dataset.certCategory;
+
+  document.getElementById('cert-lightbox-title').textContent   = title    || '';
+  document.getElementById('cert-lightbox-issuer').textContent  = issuer   || '';
+  document.getElementById('cert-lightbox-year').textContent    = year     || '';
+  document.getElementById('cert-lightbox-cat').textContent     = category || '';
+
+  const lbImg         = document.getElementById('cert-lightbox-img');
+  const lbPlaceholder = document.getElementById('cert-lightbox-placeholder');
+
+  if (img) {
+    lbImg.src         = img;
+    lbImg.alt         = title;
+    lbImg.style.display        = 'block';
+    lbPlaceholder.style.display = 'none';
+  } else {
+    lbImg.style.display        = 'none';
+    lbPlaceholder.style.display = 'flex';
+  }
+
+  lb.removeAttribute('hidden');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('cert-lightbox-close')?.focus();
+}
+
+function closeLightbox() {
+  const lb = document.getElementById('cert-lightbox');
+  if (!lb) return;
+  lb.setAttribute('hidden', '');
+  document.body.style.overflow = '';
+}
 
 /* ============================================================
    13. PORTFOLIO FILTER
