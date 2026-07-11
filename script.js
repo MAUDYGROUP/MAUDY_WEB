@@ -166,11 +166,18 @@
   if (cms.partners && cms.partners.length > 0) {
     const track = document.querySelector('.marquee-track');
     if (track) {
-      const partners = cms.partners.filter(p => p && p.trim());
-      const doubled = [...partners, ...partners];
-      track.innerHTML = doubled.map(p =>
-        `<div class="partner-logo">${p}</div>`
-      ).join('');
+      const partners = cms.partners.filter(p => p && (typeof p === 'string' ? p.trim() : p.name));
+      const normalized = partners.map(p => typeof p === 'string' ? { name: p, logo: null } : p);
+      const doubled = [...normalized, ...normalized];
+      track.innerHTML = doubled.map(p => {
+        if (p.logo) {
+          return `<div class="partner-logo">
+            <img class="partner-img" src="${p.logo}" alt="${p.name}" draggable="false" data-no-protect="true" loading="lazy" />
+            <span>${p.name}</span>
+          </div>`;
+        }
+        return `<div class="partner-logo">${p.name}</div>`;
+      }).join('');
     }
   }
 
@@ -909,9 +916,18 @@ function applyLanguage(lang, animate = true) {
     if (cms.partners && cms.partners.length > 0) {
       const track = document.querySelector('.marquee-track');
       if (track) {
-        const partners = cms.partners.filter(p => p && p.trim());
-        const doubled = [...partners, ...partners];
-        track.innerHTML = doubled.map(p => `<div class="partner-logo">${p}</div>`).join('');
+        const partners = cms.partners.filter(p => p && (typeof p === 'string' ? p.trim() : p.name));
+        const normalized = partners.map(p => typeof p === 'string' ? { name: p, logo: null } : p);
+        const doubled = [...normalized, ...normalized];
+        track.innerHTML = doubled.map(p => {
+          if (p.logo) {
+            return `<div class="partner-logo">
+              <img class="partner-img" src="${p.logo}" alt="${p.name}" draggable="false" data-no-protect="true" loading="lazy" />
+              <span>${p.name}</span>
+            </div>`;
+          }
+          return `<div class="partner-logo">${p.name}</div>`;
+        }).join('');
       }
     }
 

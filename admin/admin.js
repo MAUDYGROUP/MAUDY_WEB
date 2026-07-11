@@ -43,9 +43,16 @@ const DEFAULT_DATA = {
     tiktok:    '',
   },
   partners: [
-    'Ubiquiti', 'TP-Link', 'ASUS', 'Microsoft',
-    'Cisco', 'HP', 'Dell', 'Lenovo', 'MikroTik',
-    'Hikvision'
+    { name: 'Ubiquiti',  logo: null },
+    { name: 'TP-Link',   logo: null },
+    { name: 'ASUS',      logo: null },
+    { name: 'Microsoft', logo: null },
+    { name: 'Cisco',     logo: null },
+    { name: 'HP',        logo: null },
+    { name: 'Dell',      logo: null },
+    { name: 'Lenovo',    logo: null },
+    { name: 'MikroTik',  logo: null },
+    { name: 'Hikvision', logo: null },
   ],
   testimonials: [
     {
@@ -326,14 +333,54 @@ function updateStatPreviews() {
 }
 
 // ============================================================
-// PARTNERS LIST
+// PARTNERS LIST + LOGO UPLOAD + DRAG & DROP REORDER
 // ============================================================
-// PARTNERS LIST + DRAG & DROP REORDER
-// ============================================================
-let dragSrc = null;  // elemen yang sedang di-drag
-let dragPlaceholder = null;  // placeholder visual
+let dragSrc = null;
+let dragPlaceholder = null;
+
+/* Normalisasi data lama (string) ke format baru ({ name, logo }) */
+function normalizePartners(arr) {
+  return arr.map(p =>
+    typeof p === 'string' ? { name: p, logo: null } : (p || { name: '', logo: null })
+  );
+}
+
+/* Convert uploaded file → canvas resize → WebP base64 */
+function fileToWebP(file, targetW = 200, targetH = 100, quality = 0.80) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) return reject('Bukan file gambar');
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width  = targetW;
+        canvas.height = targetH;
+        const ctx = canvas.getContext('2d');
+        // Latar transparan → putih agar logo tidak gelap
+        ctx.fillStyle = 'rgba(255,255,255,0)';
+        ctx.fillRect(0, 0, targetW, targetH);
+        // Object-fit: contain (skalakan proporsional ke dalam kotak)
+        const scale = Math.min(targetW / img.naturalWidth, targetH / img.naturalHeight);
+        const w = img.naturalWidth  * scale;
+        const h = img.naturalHeight * scale;
+        const x = (targetW - w) / 2;
+        const y = (targetH - h) / 2;
+        ctx.drawImage(img, x, y, w, h);
+        const webp = canvas.toDataURL('image/webp', quality);
+        resolve(webp);
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 function renderPartners() {
+  // Normalisasi agar backward-compatible dengan format lama (string)
+  data.partners = normalizePartners(data.partners);
   const list = document.getElementById('partners-list');
   list.innerHTML = '';
   data.partners.forEach((p, idx) => {
@@ -342,28 +389,121 @@ function renderPartners() {
   initPartnerDragDrop();
 }
 
-function createPartnerRow(name, idx) {
+function createPartnerRow(partner, idx) {
+  // partner = { name, logo } atau string (lama)
+  if (typeof partner === 'string') partner = { name: partner, logo: null };
+  const { name = '', logo = null } = partner;
+
   const row = document.createElement('div');
-  row.className = 'partner-row';
+  row.className = 'partner-row partner-row-v2';
   row.dataset.idx = idx;
   row.draggable = true;
-  row.innerHTML = `
+
+  // Buat file input (tersembunyi)
+  const fileInput = document.createElement('input');
+  fileInput.type   = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.style.display = 'none';
+  fileInput.setAttribute('aria-label', `Upload logo ${name || idx + 1}`);
+  row.appendChild(fileInput);
+
+  // HTML struktur
+  row.innerHTML += `
     <span class="drag-handle" title="Seret untuk mengubah urutan" aria-hidden="true">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
     </span>
-    <input type="text" value="${escapeHtml(name)}" placeholder="Nama partner" aria-label="Nama partner ${idx + 1}" />
+
+    <div class="partner-logo-upload">
+      <div class="partner-logo-preview" title="Klik untuk upload logo">
+        ${logo
+          ? `<img src="${logo}" alt="Logo ${escapeHtml(name)}" draggable="false" data-no-protect="true" />`
+          : `<span class="partner-logo-placeholder">
+               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+             </span>`
+        }
+      </div>
+      <button class="btn-upload-logo" type="button" title="Upload / Ganti Logo">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload
+      </button>
+      ${logo ? '<button class="btn-remove-logo" type="button" title="Hapus Logo">✕</button>' : ''}
+    </div>
+
+    <input type="text" class="partner-name-input" value="${escapeHtml(name)}" placeholder="Nama partner" aria-label="Nama partner ${idx + 1}" />
+
     <button class="btn-remove" title="Hapus partner" aria-label="Hapus ${escapeHtml(name)}">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
     </button>
   `;
+
+  /* ---- Event: hapus partner ---- */
   row.querySelector('.btn-remove').addEventListener('click', () => {
     data.partners.splice(idx, 1);
     renderPartners();
   });
-  row.querySelector('input').addEventListener('input', (e) => {
-    data.partners[idx] = e.target.value;
+
+  /* ---- Event: ubah nama ---- */
+  row.querySelector('.partner-name-input').addEventListener('input', (e) => {
+    if (data.partners[idx]) data.partners[idx].name = e.target.value;
   });
+
+  /* ---- Event: klik area preview → buka file picker ---- */
+  row.querySelector('.partner-logo-preview').addEventListener('click', () => fileInput.click());
+  row.querySelector('.btn-upload-logo').addEventListener('click', () => fileInput.click());
+
+  /* ---- Event: file dipilih → convert WebP → update preview ---- */
+  fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const btn = row.querySelector('.btn-upload-logo');
+    btn.textContent = '⏳';
+    btn.disabled = true;
+    try {
+      const webp = await fileToWebP(file, 200, 100, 0.80);
+      if (data.partners[idx]) data.partners[idx].logo = webp;
+      // Update preview
+      const preview = row.querySelector('.partner-logo-preview');
+      preview.innerHTML = `<img src="${webp}" alt="Logo" draggable="false" data-no-protect="true" />`;
+      // Tambah tombol hapus logo jika belum ada
+      if (!row.querySelector('.btn-remove-logo')) {
+        const rmLogo = document.createElement('button');
+        rmLogo.className = 'btn-remove-logo';
+        rmLogo.type = 'button';
+        rmLogo.title = 'Hapus Logo';
+        rmLogo.textContent = '✕';
+        row.querySelector('.partner-logo-upload').appendChild(rmLogo);
+        rmLogo.addEventListener('click', () => removeLogo(row, idx));
+      }
+      showToast('✅ Logo dikonversi ke WebP (200×100px)', 'success');
+    } catch (err) {
+      showToast('❌ Gagal memproses gambar: ' + err, 'error');
+    } finally {
+      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload`;
+      btn.disabled = false;
+    }
+  });
+
+  /* ---- Event: hapus logo ---- */
+  const rmLogoBtn = row.querySelector('.btn-remove-logo');
+  if (rmLogoBtn) rmLogoBtn.addEventListener('click', () => removeLogo(row, idx));
+
+  /* ---- Drag: input tidak ikut trigger drag ---- */
+  const handle = row.querySelector('.drag-handle');
+  handle.style.cursor = 'grab';
+  row.querySelectorAll('input, button').forEach(el => {
+    el.addEventListener('mousedown', e => e.stopPropagation());
+    el.addEventListener('dragstart', e => e.preventDefault());
+  });
+
   return row;
+}
+
+function removeLogo(row, idx) {
+  if (data.partners[idx]) data.partners[idx].logo = null;
+  const preview = row.querySelector('.partner-logo-preview');
+  preview.innerHTML = `<span class="partner-logo-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>`;
+  const rmBtn = row.querySelector('.btn-remove-logo');
+  if (rmBtn) rmBtn.remove();
 }
 
 function initPartnerDragDrop() {
@@ -371,29 +511,19 @@ function initPartnerDragDrop() {
   const rows  = list.querySelectorAll('.partner-row');
 
   rows.forEach(row => {
-    // ---- dragstart: ambil elemen ----
     row.addEventListener('dragstart', (e) => {
       dragSrc = row;
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', row.dataset.idx);
-      // Delay agar clone tidak tampak saat visual hilang
       setTimeout(() => row.classList.add('dragging'), 0);
     });
-
-    // ---- dragend: bersihkan state ----
     row.addEventListener('dragend', () => {
       row.classList.remove('dragging');
       list.querySelectorAll('.partner-row').forEach(r => r.classList.remove('drag-over'));
-      if (dragPlaceholder && dragPlaceholder.parentNode) {
-        dragPlaceholder.parentNode.removeChild(dragPlaceholder);
-      }
       dragPlaceholder = null;
       dragSrc = null;
-      // Sync data array dari urutan DOM
       syncPartnersFromDOM();
     });
-
-    // ---- dragover: tampilkan posisi drop ----
     row.addEventListener('dragover', (e) => {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
@@ -401,62 +531,42 @@ function initPartnerDragDrop() {
       list.querySelectorAll('.partner-row').forEach(r => r.classList.remove('drag-over'));
       row.classList.add('drag-over');
     });
-
-    // ---- dragleave: hapus highlight ----
     row.addEventListener('dragleave', (e) => {
-      if (!row.contains(e.relatedTarget)) {
-        row.classList.remove('drag-over');
-      }
+      if (!row.contains(e.relatedTarget)) row.classList.remove('drag-over');
     });
-
-    // ---- drop: pindahkan elemen ----
     row.addEventListener('drop', (e) => {
       e.preventDefault();
       if (!dragSrc || dragSrc === row) return;
       row.classList.remove('drag-over');
-
-      // Tentukan posisi: atas atau bawah dari row target
       const rect   = row.getBoundingClientRect();
-      const midY   = rect.top + rect.height / 2;
-      const before = e.clientY < midY;
-
-      if (before) {
-        list.insertBefore(dragSrc, row);
-      } else {
-        list.insertBefore(dragSrc, row.nextSibling);
-      }
-
+      const before = e.clientY < rect.top + rect.height / 2;
+      if (before) list.insertBefore(dragSrc, row);
+      else list.insertBefore(dragSrc, row.nextSibling);
       syncPartnersFromDOM();
     });
-
-    // ---- Hanya drag handle yang bisa mulai drag ----
-    const handle = row.querySelector('.drag-handle');
-    const input  = row.querySelector('input');
-
-    handle.style.cursor = 'grab';
-    // Input tidak boleh trigger drag
-    input.addEventListener('mousedown', (e) => e.stopPropagation());
-    input.addEventListener('dragstart', (e) => e.preventDefault());
   });
 }
 
-// Sinkronisasi data.partners dari urutan row di DOM
+/* Sync data.partners dari urutan DOM (termasuk logo) */
 function syncPartnersFromDOM() {
-  const list   = document.getElementById('partners-list');
-  const inputs = list.querySelectorAll('.partner-row input');
-  data.partners = Array.from(inputs).map(inp => inp.value);
-  // Update idx dataset masing-masing row
-  list.querySelectorAll('.partner-row').forEach((row, i) => {
+  const list = document.getElementById('partners-list');
+  data.partners = Array.from(list.querySelectorAll('.partner-row')).map((row, i) => {
     row.dataset.idx = i;
-    const inp = row.querySelector('input');
-    if (inp) inp.setAttribute('aria-label', `Nama partner ${i + 1}`);
+    const nameEl = row.querySelector('.partner-name-input');
+    const imgEl  = row.querySelector('.partner-logo-preview img');
+    if (nameEl) nameEl.setAttribute('aria-label', `Nama partner ${i + 1}`);
+    const idx = parseInt(row.dataset.idx);
+    return {
+      name: nameEl ? nameEl.value : '',
+      logo: imgEl  ? imgEl.src   : (data.partners[idx] ? data.partners[idx].logo : null),
+    };
   });
 }
 
 document.getElementById('add-partner-btn').addEventListener('click', () => {
-  data.partners.push('');
+  data.partners.push({ name: '', logo: null });
   renderPartners();
-  const inputs = document.querySelectorAll('#partners-list .partner-row input');
+  const inputs = document.querySelectorAll('#partners-list .partner-name-input');
   if (inputs.length) inputs[inputs.length - 1].focus();
 });
 
