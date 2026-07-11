@@ -9,6 +9,7 @@
 
 /* ============================================================
    0. CMS DATA LOADER — Reads from Admin Panel (localStorage)
+      Applies ALL admin changes to DOM immediately on page load
    ============================================================ */
 (function loadCMSData() {
   const CMS_KEY = 'maudy_cms_data';
@@ -19,94 +20,153 @@
   } catch (e) { /* use defaults */ }
   if (!cms) return;
 
-  // Helper: set text content safely
+  /* ---- Helpers ---- */
   const setText = (sel, val) => {
-    document.querySelectorAll(sel).forEach(el => { if (el && val !== undefined) el.textContent = val; });
+    if (!val) return;
+    document.querySelectorAll(sel).forEach(el => { el.textContent = val; });
+  };
+  const setHTML = (sel, val) => {
+    if (!val) return;
+    document.querySelectorAll(sel).forEach(el => { el.innerHTML = val; });
   };
   const setAttr = (sel, attr, val) => {
-    document.querySelectorAll(sel).forEach(el => { if (el && val !== undefined) el.setAttribute(attr, val); });
+    if (!val) return;
+    document.querySelectorAll(sel).forEach(el => el.setAttribute(attr, val));
   };
   const setHref = (sel, val) => {
     if (!val || val === '#') return;
-    document.querySelectorAll(sel).forEach(el => { if (el) el.href = val; });
+    document.querySelectorAll(sel).forEach(el => { el.href = val; });
+  };
+  const setI18n = (key, val, lang = 'both') => {
+    if (!val) return;
+    if (lang === 'both' || lang === 'id') {
+      document.querySelectorAll(`[data-i18n="${key}"]`).forEach(el => {
+        el.innerHTML = String(val).replace(/\n/g, '<br>');
+      });
+    }
+    // Patch TRANSLATIONS for when language toggled
+    if (window.TRANSLATIONS) {
+      if (lang === 'both' || lang === 'id') {
+        if (window.TRANSLATIONS.id) window.TRANSLATIONS.id[key] = String(val);
+      }
+      if (lang === 'both' || lang === 'en') {
+        if (window.TRANSLATIONS.en && val) window.TRANSLATIONS.en[key] = String(val);
+      }
+    }
   };
 
-  // ---- Contact Info ----
+  // ---- 1. CONTACT ----
   if (cms.contact) {
     const c = cms.contact;
-    const waNum = c.whatsapp || '6281234567890';
+    const waNum = (c.whatsapp || '').replace(/[^0-9]/g, '') || '6281234567890';
     const waLink = `https://wa.me/${waNum}`;
 
-    // Phone text + href
     if (c.phone) {
       setText('a[href^="tel:"]', c.phone);
       setAttr('a[href^="tel:"]', 'href', `tel:+${waNum}`);
     }
-    // Email text + href
     if (c.email) {
       setText('a[href^="mailto:"]', c.email);
       setAttr('a[href^="mailto:"]', 'href', `mailto:${c.email}`);
     }
-    // WhatsApp links
-    if (waLink) {
-      setHref('.wa-float', waLink);
-      setHref('.btn-whatsapp', waLink);
-      document.querySelectorAll('a[href^="https://wa.me/"]').forEach(el => {
-        el.href = waLink;
-      });
-    }
+    // WhatsApp links (all occurrences)
+    setHref('.wa-float', waLink);
+    setHref('.btn-whatsapp', waLink);
+    document.querySelectorAll('a[href*="wa.me"]').forEach(el => { el.href = waLink; });
+
     // Address
     if (c.address) {
-      document.querySelectorAll('[data-i18n="ci1_val"]').forEach(el => {
-        el.textContent = c.address;
-      });
+      setI18n('ci1_val', c.address);
     }
-    // Hours (will be overridden by i18n if lang != id, but set base)
+    // Hours
     if (c.hours_id) {
       document.querySelectorAll('[data-i18n="ci4_val"]').forEach(el => {
-        el.innerHTML = c.hours_id.replace(/\n/g, '<br/>');
+        el.innerHTML = c.hours_id.replace(/\n/g, '<br>');
+      });
+      if (window.TRANSLATIONS && window.TRANSLATIONS.id) {
+        window.TRANSLATIONS.id['ci4_val'] = c.hours_id;
+      }
+    }
+    if (c.hours_en && window.TRANSLATIONS && window.TRANSLATIONS.en) {
+      window.TRANSLATIONS.en['ci4_val'] = c.hours_en;
+    }
+    // Phone number display in contact section
+    if (c.phone) {
+      document.querySelectorAll('[data-i18n="ci2_val"]').forEach(el => {
+        el.textContent = c.phone;
+      });
+    }
+    // Email display
+    if (c.email) {
+      document.querySelectorAll('[data-i18n="ci3_val"]').forEach(el => {
+        el.textContent = c.email;
       });
     }
   }
 
-  // ---- Stats counters ----
+  // ---- 2. STATS / COUNTERS ----
   if (cms.stats) {
-    const targets = document.querySelectorAll('.counter[data-target]');
     const statMap = [cms.stats.years, cms.stats.projects, cms.stats.clients, cms.stats.services];
-    targets.forEach((el, i) => {
-      if (statMap[i] !== undefined) el.dataset.target = statMap[i];
+    document.querySelectorAll('.counter[data-target]').forEach((el, i) => {
+      if (statMap[i] !== undefined) {
+        el.dataset.target = statMap[i];
+        el.textContent = '0'; // reset agar counter ulang dari 0
+      }
     });
   }
 
-  // ---- Company/Hero ----
+  // ---- 3. COMPANY / HERO ----
   if (cms.company) {
     const co = cms.company;
-    if (co.trust_count) {
-      document.querySelectorAll('[data-i18n="hero_trust"]').forEach(el => {
-        el.textContent = `Dipercaya oleh ${co.trust_count}+ klien`;
-      });
+    // Hero badge
+    if (co.hero_badge_id) setI18n('hero_badge', co.hero_badge_id);
+    if (co.hero_badge_en && window.TRANSLATIONS && window.TRANSLATIONS.en) {
+      window.TRANSLATIONS.en['hero_badge'] = co.hero_badge_en;
     }
+    // Hero description
+    if (co.desc_id) setI18n('hero_desc', co.desc_id);
+    if (co.desc_en && window.TRANSLATIONS && window.TRANSLATIONS.en) {
+      window.TRANSLATIONS.en['hero_desc'] = co.desc_en;
+    }
+    // Trust count
+    if (co.trust_count) {
+      const trustId = `Dipercaya oleh ${co.trust_count}+ klien`;
+      const trustEn = `Trusted by ${co.trust_count}+ clients`;
+      setI18n('hero_trust', trustId);
+      if (window.TRANSLATIONS) {
+        if (window.TRANSLATIONS.id) window.TRANSLATIONS.id['hero_trust'] = trustId;
+        if (window.TRANSLATIONS.en) window.TRANSLATIONS.en['hero_trust'] = trustEn;
+      }
+    }
+    // Footer description
     if (co.footer_desc_id) {
-      document.querySelectorAll('[data-i18n="footer_desc"]').forEach(el => {
-        el.textContent = co.footer_desc_id;
+      setI18n('footer_desc', co.footer_desc_id);
+      if (window.TRANSLATIONS && window.TRANSLATIONS.en && co.footer_desc_id) {
+        window.TRANSLATIONS.en['footer_desc'] = co.footer_desc_id; // fallback
+      }
+    }
+    // Company name
+    if (co.name) {
+      document.querySelectorAll('.footer-brand .brand-name').forEach(el => {
+        el.textContent = co.name;
       });
     }
   }
 
-  // ---- Social Links ----
+  // ---- 4. SOCIAL LINKS ----
   if (cms.social) {
     const sm = cms.social;
-    if (sm.facebook && sm.facebook !== '#') setHref('[aria-label*="Facebook"]', sm.facebook);
+    if (sm.facebook  && sm.facebook  !== '#') setHref('[aria-label*="Facebook"]', sm.facebook);
     if (sm.instagram && sm.instagram !== '#') setHref('[aria-label*="Instagram"]', sm.instagram);
-    if (sm.linkedin && sm.linkedin !== '#') setHref('[aria-label*="LinkedIn"]', sm.linkedin);
+    if (sm.linkedin  && sm.linkedin  !== '#') setHref('[aria-label*="LinkedIn"]', sm.linkedin);
+    if (sm.tiktok    && sm.tiktok    !== '#' && sm.tiktok) setHref('[aria-label*="TikTok"]', sm.tiktok);
   }
 
-  // ---- Partners marquee ----
+  // ---- 5. PARTNERS MARQUEE ----
   if (cms.partners && cms.partners.length > 0) {
     const track = document.querySelector('.marquee-track');
     if (track) {
-      const partners = cms.partners.filter(p => p.trim());
-      // Build doubled list for infinite scroll
+      const partners = cms.partners.filter(p => p && p.trim());
       const doubled = [...partners, ...partners];
       track.innerHTML = doubled.map(p =>
         `<div class="partner-logo">${p}</div>`
@@ -114,27 +174,16 @@
     }
   }
 
-  // ---- Translations override (CMS data into TRANSLATIONS) ----
-  // This patches TRANSLATIONS object before it's used for rendering
-  // Will be applied when language toggle runs
-  window._CMS_TRANSLATIONS_PATCH = {};
-  if (cms.company) {
-    if (cms.company.hero_badge_id) window._CMS_TRANSLATIONS_PATCH.id_hero_badge = cms.company.hero_badge_id;
-    if (cms.company.hero_badge_en) window._CMS_TRANSLATIONS_PATCH.en_hero_badge = cms.company.hero_badge_en;
-    if (cms.company.desc_id) window._CMS_TRANSLATIONS_PATCH.id_hero_desc = cms.company.desc_id;
-    if (cms.company.desc_en) window._CMS_TRANSLATIONS_PATCH.en_hero_desc = cms.company.desc_en;
-    if (cms.company.trust_count) window._CMS_TRANSLATIONS_PATCH.trust_count = cms.company.trust_count;
-  }
-  if (cms.contact) {
-    if (cms.contact.hours_id) window._CMS_TRANSLATIONS_PATCH.id_hours = cms.contact.hours_id;
-    if (cms.contact.hours_en) window._CMS_TRANSLATIONS_PATCH.en_hours = cms.contact.hours_en;
-  }
-
-  // ---- Testimonials override ----
+  // ---- 6. TESTIMONIALS ----
   if (cms.testimonials && cms.testimonials.length > 0) {
     window._CMS_TESTIMONIALS = cms.testimonials;
   }
+
+  // ---- Store cms globally for other functions to access ----
+  window._CMS_DATA = cms;
 })();
+
+
 
 
 
@@ -624,8 +673,33 @@ function initTestimonials() {
   const nextBtn = document.getElementById('testi-next');
   if (!track) return;
 
+  // ---- Render from CMS if available ----
+  if (window._CMS_TESTIMONIALS && window._CMS_TESTIMONIALS.length > 0) {
+    const lang = currentLang || 'id';
+    track.innerHTML = window._CMS_TESTIMONIALS.map((t, i) => {
+      const text = lang === 'en' && t.text_en ? t.text_en : (t.text_id || t.text || '');
+      const avatarChar = (t.avatar || t.name || '?')[0].toUpperCase();
+      return `
+        <div class="testi-card" role="tabpanel" aria-label="Testimoni ${i + 1}">
+          <div class="testi-content">
+            <div class="testi-stars" aria-label="Rating 5 bintang">★★★★★</div>
+            <blockquote class="testi-text">"${text}"</blockquote>
+            <div class="testi-author">
+              <div class="testi-avatar" aria-hidden="true">${avatarChar}</div>
+              <div class="testi-info">
+                <div class="testi-name">${t.name || ''}</div>
+                <div class="testi-role">${t.role || ''}</div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+    if (dotsContainer) dotsContainer.innerHTML = '';
+  }
+
   const cards = track.querySelectorAll('.testi-card');
   testitTotal = cards.length;
+  if (testitTotal === 0) return;
 
   // Create dots
   if (dotsContainer) {
@@ -683,6 +757,7 @@ function initTestimonials() {
   // Recalculate on resize
   window.addEventListener('resize', () => goToTesti(testitCurrent), { passive: true });
 }
+
 
 /* ============================================================
    13. PORTFOLIO FILTER
@@ -798,6 +873,56 @@ function applyLanguage(lang, animate = true) {
     }
   });
 
+  // ---- Re-apply CMS overrides after language switch ----
+  // (TRANSLATIONS already patched with CMS data, but some elements need re-patch)
+  const cms = window._CMS_DATA;
+  if (cms) {
+    const setText = (sel, val) => {
+      if (!val) return;
+      document.querySelectorAll(sel).forEach(el => { el.textContent = val; });
+    };
+    const setHref = (sel, val) => {
+      if (!val || val === '#') return;
+      document.querySelectorAll(sel).forEach(el => { el.href = val; });
+    };
+
+    // Contact
+    if (cms.contact) {
+      const waNum = (cms.contact.whatsapp || '').replace(/[^0-9]/g, '') || '6281234567890';
+      const waLink = `https://wa.me/${waNum}`;
+      if (cms.contact.phone) setText('a[href^="tel:"]', cms.contact.phone);
+      if (cms.contact.email) setText('a[href^="mailto:"]', cms.contact.email);
+      document.querySelectorAll('a[href*="wa.me"]').forEach(el => { el.href = waLink; });
+      if (cms.contact.address) {
+        document.querySelectorAll('[data-i18n="ci1_val"]').forEach(el => { el.textContent = cms.contact.address; });
+      }
+      // Hours based on current lang
+      const hours = lang === 'en' ? cms.contact.hours_en : cms.contact.hours_id;
+      if (hours) {
+        document.querySelectorAll('[data-i18n="ci4_val"]').forEach(el => {
+          el.innerHTML = hours.replace(/\n/g, '<br>');
+        });
+      }
+    }
+
+    // Partners
+    if (cms.partners && cms.partners.length > 0) {
+      const track = document.querySelector('.marquee-track');
+      if (track) {
+        const partners = cms.partners.filter(p => p && p.trim());
+        const doubled = [...partners, ...partners];
+        track.innerHTML = doubled.map(p => `<div class="partner-logo">${p}</div>`).join('');
+      }
+    }
+
+    // Social links
+    if (cms.social) {
+      if (cms.social.facebook  && cms.social.facebook  !== '#') setHref('[aria-label*="Facebook"]', cms.social.facebook);
+      if (cms.social.instagram && cms.social.instagram !== '#') setHref('[aria-label*="Instagram"]', cms.social.instagram);
+      if (cms.social.linkedin  && cms.social.linkedin  !== '#') setHref('[aria-label*="LinkedIn"]', cms.social.linkedin);
+    }
+  }
+
   // Update lang toggle button
   const btn = document.getElementById('lang-toggle');
   if (btn) {
@@ -807,10 +932,9 @@ function applyLanguage(lang, animate = true) {
   }
 
   // Update page title
-  document.title = lang === 'id'
-    ? 'MAUDY IT Solution — Transforming Business Through Innovative Technology'
-    : 'MAUDY IT Solution — Transforming Business Through Innovative Technology';
+  document.title = 'MAUDY IT Solution — Transforming Business Through Innovative Technology';
 }
+
 
 document.getElementById('lang-toggle')?.addEventListener('click', () => {
   applyLanguage(currentLang === 'id' ? 'en' : 'id');
