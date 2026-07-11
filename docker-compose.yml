@@ -7,15 +7,10 @@ services:
       dockerfile: Dockerfile
     container_name: maudy-website
     restart: unless-stopped
-    ports:
-      - "80:80"
-    # Uncomment untuk HTTPS dengan port 443:
-    # ports:
-    #   - "80:80"
-    #   - "443:443"
-    volumes:
-      # Optional: mount nginx log ke host untuk monitoring
-      - ./logs/nginx:/var/log/nginx
+    # ⚠️ JANGAN definisikan ports di sini saat pakai Coolify
+    # Coolify & Traefik mengatur routing sendiri via network coolify
+    expose:
+      - "80"
     environment:
       - TZ=Asia/Jakarta
     healthcheck:
@@ -24,13 +19,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.maudy-web.rule=Host(`maudyitsolution.com`)"
-      - "traefik.http.routers.maudy-web.entrypoints=websecure"
 
-# Jika menggunakan custom network (misal: bersama Coolify/Traefik)
-# networks:
-#   default:
-#     external: true
-#     name: coolify
+networks:
+  default:
+    external: true
+    name: coolify
