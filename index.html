@@ -41,6 +41,10 @@
   <!-- Google Fonts — display=swap for performance -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
+  <!-- Preload critical assets -->
+  <link rel="preload" as="image" href="assets/hero-bg.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="style" href="style.css" />
+
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="style.css" />
 
@@ -417,7 +421,10 @@
         <div class="portfolio-grid" id="portfolio-grid">
           <article class="portfolio-card" data-category="web" data-animate="fade-up" data-delay="0">
             <div class="portfolio-img">
-              <img src="assets/portfolio-web.png" alt="Dashboard Analytics Web Application" loading="lazy" width="600" height="400" />
+              <picture>
+                <source srcset="assets/portfolio-web.webp" type="image/webp" />
+                <img src="assets/portfolio-web.png" alt="Dashboard Analytics Web Application" loading="lazy" width="600" height="400" />
+              </picture>
               <div class="portfolio-overlay">
                 <span class="portfolio-tag" data-i18n="ptag_web">Web Development</span>
                 <h3 data-i18n="p1_title">Sistem Analitik Bisnis</h3>
@@ -428,7 +435,10 @@
 
           <article class="portfolio-card" data-category="network" data-animate="fade-up" data-delay="100">
             <div class="portfolio-img">
-              <img src="assets/portfolio-network.png" alt="Network Infrastructure Monitoring Dashboard" loading="lazy" width="600" height="400" />
+              <picture>
+                <source srcset="assets/portfolio-network.webp" type="image/webp" />
+                <img src="assets/portfolio-network.png" alt="Network Infrastructure Monitoring Dashboard" loading="lazy" width="600" height="400" />
+              </picture>
               <div class="portfolio-overlay">
                 <span class="portfolio-tag" data-i18n="ptag_network">Infrastruktur Jaringan</span>
                 <h3 data-i18n="p2_title">Monitoring Jaringan Enterprise</h3>
@@ -439,7 +449,10 @@
 
           <article class="portfolio-card" data-category="security" data-animate="fade-up" data-delay="200">
             <div class="portfolio-img">
-              <img src="assets/portfolio-security.png" alt="Security CCTV Control Room" loading="lazy" width="600" height="400" />
+              <picture>
+                <source srcset="assets/portfolio-security.webp" type="image/webp" />
+                <img src="assets/portfolio-security.png" alt="Security CCTV Control Room" loading="lazy" width="600" height="400" />
+              </picture>
               <div class="portfolio-overlay">
                 <span class="portfolio-tag" data-i18n="ptag_security">Sistem Keamanan</span>
                 <h3 data-i18n="p3_title">Pusat Monitoring Keamanan</h3>
@@ -767,6 +780,7 @@
         <div class="footer-bottom-links">
           <a href="#" data-i18n="footer_privacy">Kebijakan Privasi</a>
           <a href="#" data-i18n="footer_terms">Syarat &amp; Ketentuan</a>
+          <a href="admin/" style="opacity:0.4;font-size:0.75rem" title="Admin Panel">⚙ Admin</a>
         </div>
       </div>
     </div>

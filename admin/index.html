@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin Panel — MAUDY IT Solution</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23EF4444'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='28' font-family='Arial' font-weight='bold' fill='white'%3EA%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <rect width="48" height="48" rx="14" fill="url(#lg1)"/>
+        <text x="24" y="33" text-anchor="middle" font-size="24" font-family="Poppins,sans-serif" font-weight="800" fill="white">M</text>
+        <defs><linearGradient id="lg1" x1="0" y1="0" x2="48" y2="48"><stop stop-color="#2563EB"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
+      </svg>
+    </div>
+    <h1>Admin Panel</h1>
+    <p>MAUDY IT Solution — Kelola Konten Website</p>
+    <form id="login-form" novalidate>
+      <div class="field-group">
+        <label for="admin-user">Username</label>
+        <div class="input-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input type="text" id="admin-user" placeholder="admin" autocomplete="username" />
+        </div>
+      </div>
+      <div class="field-group">
+        <label for="admin-pass">Password</label>
+        <div class="input-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <input type="password" id="admin-pass" placeholder="••••••••" autocomplete="current-password" />
+          <button type="button" id="toggle-pass" class="pass-toggle" aria-label="Tampilkan password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="login-error" class="login-error" aria-live="polite"></div>
+      <button type="submit" class="btn-login" id="login-btn">
+        <span>Masuk ke Admin Panel</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </form>
+    <p class="login-hint">Default: <code>admin</code> / <code>maudy2025</code></p>
+  </div>
+</div>
+
+<!-- ===== ADMIN APP ===== -->
+<div id="admin-app" class="admin-app hidden">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <rect width="34" height="34" rx="10" fill="url(#sg1)"/>
+        <text x="17" y="24" text-anchor="middle" font-size="18" font-family="Poppins,sans-serif" font-weight="800" fill="white">M</text>
+        <defs><linearGradient id="sg1" x1="0" y1="0" x2="34" y2="34"><stop stop-color="#2563EB"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
+      </svg>
+      <div>
+        <div class="sidebar-title">MAUDY Admin</div>
+        <div class="sidebar-sub">Panel Kontrol</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Menu admin">
+      <button class="nav-item active" data-tab="dashboard" aria-current="page">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-tab="contact">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14z"/></svg>
+        Info Kontak
+      </button>
+      <button class="nav-item" data-tab="stats">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Statistik
+      </button>
+      <button class="nav-item" data-tab="company">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+        Profil Perusahaan
+      </button>
+      <button class="nav-item" data-tab="social">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Media Sosial
+      </button>
+      <button class="nav-item" data-tab="partners">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Partner & Rekanan
+      </button>
+      <button class="nav-item" data-tab="testimonials">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Testimoni
+      </button>
+      <button class="nav-item" data-tab="security">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Keamanan
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="../index.html" target="_blank" class="view-site-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Lihat Website
+      </a>
+      <button id="logout-btn" class="logout-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Keluar
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-wrap">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <button id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="Toggle sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title" id="page-title">Dashboard</div>
+      <div class="topbar-right">
+        <div id="save-status" class="save-status" aria-live="polite"></div>
+        <button id="save-all-btn" class="btn-save-all">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Simpan Semua
+        </button>
+      </div>
+    </header>
+
+    <!-- Tab Panels -->
+    <main class="content-area">
+
+      <!-- ===== DASHBOARD ===== -->
+      <section id="tab-dashboard" class="tab-panel active">
+        <div class="page-header">
+          <h2>Selamat Datang, Admin! 👋</h2>
+          <p>Kelola seluruh konten website MAUDY IT Solution dari sini.</p>
+        </div>
+
+        <div class="dash-stats">
+          <div class="dash-stat">
+            <div class="ds-icon" style="background:linear-gradient(135deg,#2563EB,#22D3EE)">📞</div>
+            <div><div class="ds-label">Info Kontak</div><div class="ds-val" id="ds-contact">Siap</div></div>
+          </div>
+          <div class="dash-stat">
+            <div class="ds-icon" style="background:linear-gradient(135deg,#7C3AED,#EC4899)">📊</div>
+            <div><div class="ds-label">Statistik</div><div class="ds-val" id="ds-stats">Siap</div></div>
+          </div>
+          <div class="dash-stat">
+            <div class="ds-icon" style="background:linear-gradient(135deg,#10B981,#06B6D4)">🤝</div>
+            <div><div class="ds-label">Partner</div><div class="ds-val" id="ds-partners">Siap</div></div>
+          </div>
+          <div class="dash-stat">
+            <div class="ds-icon" style="background:linear-gradient(135deg,#F59E0B,#EF4444)">💬</div>
+            <div><div class="ds-label">Testimoni</div><div class="ds-val" id="ds-testi">Siap</div></div>
+          </div>
+        </div>
+
+        <div class="quick-guide">
+          <h3>📋 Panduan Cepat</h3>
+          <ol>
+            <li>Pilih menu di sidebar kiri (misal: <strong>Info Kontak</strong>)</li>
+            <li>Isi atau ubah data yang diinginkan</li>
+            <li>Klik <strong>"Simpan Semua"</strong> di pojok kanan atas</li>
+            <li>Buka website utama — data akan otomatis terupdate</li>
+          </ol>
+          <div class="info-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Data disimpan secara lokal di browser menggunakan <strong>localStorage</strong>. Data akan tetap ada meski browser ditutup dan dibuka kembali.
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== INFO KONTAK ===== -->
+      <section id="tab-contact" class="tab-panel">
+        <div class="page-header">
+          <h2>📞 Info Kontak</h2>
+          <p>Nomor telepon, WhatsApp, email, alamat, dan jam operasional yang tampil di website.</p>
+        </div>
+        <div class="card-form">
+          <div class="form-grid">
+            <div class="field-group">
+              <label for="c-whatsapp">Nomor WhatsApp <span class="required">*</span></label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.004 2.003C6.478 2.003 2 6.481 2 12.005c0 1.77.47 3.448 1.267 4.914L2.003 21.997l5.196-1.235a9.982 9.982 0 004.805 1.223c5.525 0 10.003-4.478 10.003-10.003 0-2.672-1.04-5.183-2.929-7.073a9.958 9.958 0 00-7.074-2.906z"/></svg>
+                <input type="text" id="c-whatsapp" placeholder="628123456789 (format tanpa + atau tanda baca)" />
+              </div>
+              <small>Format: kode negara + nomor (contoh: <code>628123456789</code>)</small>
+            </div>
+            <div class="field-group">
+              <label for="c-phone">Nomor Telepon (tampil di website)</label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 0h3a2 2 0 012 1.72"/></svg>
+                <input type="text" id="c-phone" placeholder="+62 812-3456-7890" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="c-email">Email <span class="required">*</span></label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <input type="email" id="c-email" placeholder="info@maudyitsolution.com" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="c-address">Alamat <span class="required">*</span></label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <input type="text" id="c-address" placeholder="Jl. Teknologi No. 99, Kota Maju, Indonesia" />
+              </div>
+            </div>
+            <div class="field-group span-2">
+              <label for="c-hours">Jam Operasional (ID)</label>
+              <textarea id="c-hours" rows="2" placeholder="Senin – Sabtu: 08.00 – 17.00&#10;Support 24/7 tersedia"></textarea>
+            </div>
+            <div class="field-group span-2">
+              <label for="c-hours-en">Jam Operasional (EN)</label>
+              <textarea id="c-hours-en" rows="2" placeholder="Mon – Sat: 08:00 – 17:00&#10;24/7 support available"></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== STATISTIK ===== -->
+      <section id="tab-stats" class="tab-panel">
+        <div class="page-header">
+          <h2>📊 Statistik Perusahaan</h2>
+          <p>Angka-angka yang tampil di section statistik website (dengan animasi counter).</p>
+        </div>
+        <div class="card-form">
+          <div class="form-grid">
+            <div class="field-group">
+              <label for="s-years">🏆 Tahun Pengalaman</label>
+              <div class="input-wrap">
+                <input type="number" id="s-years" min="1" max="100" placeholder="10" />
+              </div>
+              <small>Tampil sebagai: <strong id="preview-years">10</strong>+</small>
+            </div>
+            <div class="field-group">
+              <label for="s-projects">✅ Proyek Selesai</label>
+              <div class="input-wrap">
+                <input type="number" id="s-projects" min="1" max="9999" placeholder="150" />
+              </div>
+              <small>Tampil sebagai: <strong id="preview-projects">150</strong>+</small>
+            </div>
+            <div class="field-group">
+              <label for="s-clients">😊 Klien Puas</label>
+              <div class="input-wrap">
+                <input type="number" id="s-clients" min="1" max="9999" placeholder="80" />
+              </div>
+              <small>Tampil sebagai: <strong id="preview-clients">80</strong>+</small>
+            </div>
+            <div class="field-group">
+              <label for="s-services">🌐 Jenis Layanan</label>
+              <div class="input-wrap">
+                <input type="number" id="s-services" min="1" max="999" placeholder="38" />
+              </div>
+              <small>Tampil sebagai: <strong id="preview-services">38</strong>+</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== PROFIL PERUSAHAAN ===== -->
+      <section id="tab-company" class="tab-panel">
+        <div class="page-header">
+          <h2>🏢 Profil Perusahaan</h2>
+          <p>Nama perusahaan, tagline, dan deskripsi yang tampil di hero section dan footer.</p>
+        </div>
+        <div class="card-form">
+          <div class="form-grid">
+            <div class="field-group">
+              <label for="co-name">Nama Perusahaan</label>
+              <input type="text" id="co-name" placeholder="MAUDY IT Solution" />
+            </div>
+            <div class="field-group">
+              <label for="co-hero-badge-id">Badge Hero (ID)</label>
+              <input type="text" id="co-hero-badge-id" placeholder="⚡ IT Solution Terpercaya #1" />
+            </div>
+            <div class="field-group">
+              <label for="co-hero-badge-en">Badge Hero (EN)</label>
+              <input type="text" id="co-hero-badge-en" placeholder="⚡ Trusted IT Solution #1" />
+            </div>
+            <div class="field-group">
+              <label for="co-trust-count">Jumlah Klien (trust indicator)</label>
+              <input type="number" id="co-trust-count" min="1" placeholder="50" />
+              <small>Tampil: "Dipercaya oleh <strong>50</strong>+ klien"</small>
+            </div>
+            <div class="field-group span-2">
+              <label for="co-desc-id">Deskripsi Hero (ID)</label>
+              <textarea id="co-desc-id" rows="3" placeholder="Solusi IT terlengkap untuk mendukung pertumbuhan bisnis Anda..."></textarea>
+            </div>
+            <div class="field-group span-2">
+              <label for="co-desc-en">Deskripsi Hero (EN)</label>
+              <textarea id="co-desc-en" rows="3" placeholder="The most comprehensive IT solutions to support your business growth..."></textarea>
+            </div>
+            <div class="field-group span-2">
+              <label for="co-footer-desc-id">Deskripsi Footer (ID)</label>
+              <textarea id="co-footer-desc-id" rows="2" placeholder="Mitra teknologi terpercaya untuk mendukung transformasi digital bisnis Anda."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== MEDIA SOSIAL ===== -->
+      <section id="tab-social" class="tab-panel">
+        <div class="page-header">
+          <h2>📱 Media Sosial & Link</h2>
+          <p>Link media sosial yang tampil di footer dan tombol WhatsApp floating.</p>
+        </div>
+        <div class="card-form">
+          <div class="form-grid">
+            <div class="field-group">
+              <label for="sm-facebook">Facebook</label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                <input type="url" id="sm-facebook" placeholder="https://facebook.com/maudyitsolution" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="sm-instagram">Instagram</label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/></svg>
+                <input type="url" id="sm-instagram" placeholder="https://instagram.com/maudyitsolution" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="sm-linkedin">LinkedIn</label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                <input type="url" id="sm-linkedin" placeholder="https://linkedin.com/company/maudyitsolution" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="sm-tiktok">TikTok (opsional)</label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.2 8.2 0 004.79 1.53V6.77a4.84 4.84 0 01-1.02-.08z"/></svg>
+                <input type="url" id="sm-tiktok" placeholder="https://tiktok.com/@maudyitsolution" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== PARTNER ===== -->
+      <section id="tab-partners" class="tab-panel">
+        <div class="page-header">
+          <h2>🤝 Partner & Rekanan</h2>
+          <p>Nama-nama partner yang bergerak di marquee animation website.</p>
+        </div>
+        <div class="card-form">
+          <div class="partners-list" id="partners-list"></div>
+          <button type="button" class="btn-add" id="add-partner-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Tambah Partner
+          </button>
+        </div>
+      </section>
+
+      <!-- ===== TESTIMONI ===== -->
+      <section id="tab-testimonials" class="tab-panel">
+        <div class="page-header">
+          <h2>💬 Testimoni Klien</h2>
+          <p>Kelola testimoni yang tampil di carousel website.</p>
+        </div>
+        <div class="card-form">
+          <div class="testi-list" id="testi-list"></div>
+          <button type="button" class="btn-add" id="add-testi-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Tambah Testimoni
+          </button>
+        </div>
+      </section>
+
+      <!-- ===== KEAMANAN ===== -->
+      <section id="tab-security" class="tab-panel">
+        <div class="page-header">
+          <h2>🔒 Keamanan</h2>
+          <p>Ganti username dan password admin panel.</p>
+        </div>
+        <div class="card-form">
+          <div class="form-grid">
+            <div class="field-group">
+              <label for="sec-user">Username Baru</label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input type="text" id="sec-user" placeholder="admin" autocomplete="new-username" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="sec-pass-old">Password Lama</label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                <input type="password" id="sec-pass-old" placeholder="Password lama" autocomplete="current-password" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="sec-pass-new">Password Baru</label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                <input type="password" id="sec-pass-new" placeholder="Password baru (min. 6 karakter)" autocomplete="new-password" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="sec-pass-confirm">Konfirmasi Password Baru</label>
+              <div class="input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                <input type="password" id="sec-pass-confirm" placeholder="Ulangi password baru" autocomplete="new-password" />
+              </div>
+            </div>
+          </div>
+          <div id="sec-status" class="form-status" aria-live="polite"></div>
+          <button type="button" id="change-pass-btn" class="btn-save-all" style="margin-top:1rem">
+            Ganti Kredensial
+          </button>
+          <div class="info-box" style="margin-top:1.5rem">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Admin panel ini dilindungi dengan autentikasi berbasis <strong>localStorage</strong>. Gunakan password yang kuat.
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script src="admin.js" defer></script>
+</body>
+</html>

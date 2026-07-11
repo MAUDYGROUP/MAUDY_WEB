@@ -8,6 +8,137 @@
 'use strict';
 
 /* ============================================================
+   0. CMS DATA LOADER — Reads from Admin Panel (localStorage)
+   ============================================================ */
+(function loadCMSData() {
+  const CMS_KEY = 'maudy_cms_data';
+  let cms = null;
+  try {
+    const raw = localStorage.getItem(CMS_KEY);
+    if (raw) cms = JSON.parse(raw);
+  } catch (e) { /* use defaults */ }
+  if (!cms) return;
+
+  // Helper: set text content safely
+  const setText = (sel, val) => {
+    document.querySelectorAll(sel).forEach(el => { if (el && val !== undefined) el.textContent = val; });
+  };
+  const setAttr = (sel, attr, val) => {
+    document.querySelectorAll(sel).forEach(el => { if (el && val !== undefined) el.setAttribute(attr, val); });
+  };
+  const setHref = (sel, val) => {
+    if (!val || val === '#') return;
+    document.querySelectorAll(sel).forEach(el => { if (el) el.href = val; });
+  };
+
+  // ---- Contact Info ----
+  if (cms.contact) {
+    const c = cms.contact;
+    const waNum = c.whatsapp || '6281234567890';
+    const waLink = `https://wa.me/${waNum}`;
+
+    // Phone text + href
+    if (c.phone) {
+      setText('a[href^="tel:"]', c.phone);
+      setAttr('a[href^="tel:"]', 'href', `tel:+${waNum}`);
+    }
+    // Email text + href
+    if (c.email) {
+      setText('a[href^="mailto:"]', c.email);
+      setAttr('a[href^="mailto:"]', 'href', `mailto:${c.email}`);
+    }
+    // WhatsApp links
+    if (waLink) {
+      setHref('.wa-float', waLink);
+      setHref('.btn-whatsapp', waLink);
+      document.querySelectorAll('a[href^="https://wa.me/"]').forEach(el => {
+        el.href = waLink;
+      });
+    }
+    // Address
+    if (c.address) {
+      document.querySelectorAll('[data-i18n="ci1_val"]').forEach(el => {
+        el.textContent = c.address;
+      });
+    }
+    // Hours (will be overridden by i18n if lang != id, but set base)
+    if (c.hours_id) {
+      document.querySelectorAll('[data-i18n="ci4_val"]').forEach(el => {
+        el.innerHTML = c.hours_id.replace(/\n/g, '<br/>');
+      });
+    }
+  }
+
+  // ---- Stats counters ----
+  if (cms.stats) {
+    const targets = document.querySelectorAll('.counter[data-target]');
+    const statMap = [cms.stats.years, cms.stats.projects, cms.stats.clients, cms.stats.services];
+    targets.forEach((el, i) => {
+      if (statMap[i] !== undefined) el.dataset.target = statMap[i];
+    });
+  }
+
+  // ---- Company/Hero ----
+  if (cms.company) {
+    const co = cms.company;
+    if (co.trust_count) {
+      document.querySelectorAll('[data-i18n="hero_trust"]').forEach(el => {
+        el.textContent = `Dipercaya oleh ${co.trust_count}+ klien`;
+      });
+    }
+    if (co.footer_desc_id) {
+      document.querySelectorAll('[data-i18n="footer_desc"]').forEach(el => {
+        el.textContent = co.footer_desc_id;
+      });
+    }
+  }
+
+  // ---- Social Links ----
+  if (cms.social) {
+    const sm = cms.social;
+    if (sm.facebook && sm.facebook !== '#') setHref('[aria-label*="Facebook"]', sm.facebook);
+    if (sm.instagram && sm.instagram !== '#') setHref('[aria-label*="Instagram"]', sm.instagram);
+    if (sm.linkedin && sm.linkedin !== '#') setHref('[aria-label*="LinkedIn"]', sm.linkedin);
+  }
+
+  // ---- Partners marquee ----
+  if (cms.partners && cms.partners.length > 0) {
+    const track = document.querySelector('.marquee-track');
+    if (track) {
+      const partners = cms.partners.filter(p => p.trim());
+      // Build doubled list for infinite scroll
+      const doubled = [...partners, ...partners];
+      track.innerHTML = doubled.map(p =>
+        `<div class="partner-logo">${p}</div>`
+      ).join('');
+    }
+  }
+
+  // ---- Translations override (CMS data into TRANSLATIONS) ----
+  // This patches TRANSLATIONS object before it's used for rendering
+  // Will be applied when language toggle runs
+  window._CMS_TRANSLATIONS_PATCH = {};
+  if (cms.company) {
+    if (cms.company.hero_badge_id) window._CMS_TRANSLATIONS_PATCH.id_hero_badge = cms.company.hero_badge_id;
+    if (cms.company.hero_badge_en) window._CMS_TRANSLATIONS_PATCH.en_hero_badge = cms.company.hero_badge_en;
+    if (cms.company.desc_id) window._CMS_TRANSLATIONS_PATCH.id_hero_desc = cms.company.desc_id;
+    if (cms.company.desc_en) window._CMS_TRANSLATIONS_PATCH.en_hero_desc = cms.company.desc_en;
+    if (cms.company.trust_count) window._CMS_TRANSLATIONS_PATCH.trust_count = cms.company.trust_count;
+  }
+  if (cms.contact) {
+    if (cms.contact.hours_id) window._CMS_TRANSLATIONS_PATCH.id_hours = cms.contact.hours_id;
+    if (cms.contact.hours_en) window._CMS_TRANSLATIONS_PATCH.en_hours = cms.contact.hours_en;
+  }
+
+  // ---- Testimonials override ----
+  if (cms.testimonials && cms.testimonials.length > 0) {
+    window._CMS_TESTIMONIALS = cms.testimonials;
+  }
+})();
+
+
+
+/* ============================================================
    1. TRANSLATIONS (ID / EN)
    ============================================================ */
 const TRANSLATIONS = {

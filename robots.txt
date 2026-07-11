@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Disallow admin, private paths (add as needed)
+# Disallow: /admin/
+# Disallow: /private/
+
+# Sitemap location
+Sitemap: https://maudyitsolution.com/sitemap.xml
+
+# Crawl delay (optional, be conservative)
+Crawl-delay: 1
