@@ -211,12 +211,17 @@ function showLogin() {
   document.getElementById('admin-pass').value = '';
 }
 
+const LAST_TAB_KEY = 'maudy_admin_last_tab';
+
 function showAdmin() {
   loginScreen.classList.add('hidden');
   adminApp.classList.remove('hidden');
   data = loadData();
   populateForms();
   updateDashboard();
+  // Restore tab terakhir (atau dashboard jika pertama kali)
+  const lastTab = sessionStorage.getItem(LAST_TAB_KEY) || 'dashboard';
+  switchTab(lastTab);
 }
 
 // ============================================================
@@ -276,15 +281,26 @@ const TAB_TITLES = {
   security:     'Keamanan',
 };
 
+// ===== Helper: pindah tab =====
+function switchTab(tab) {
+  const targetPanel = document.getElementById(`tab-${tab}`);
+  if (!targetPanel) return; // tab tidak ada, abaikan
+  navItems.forEach(n => { n.classList.remove('active'); n.removeAttribute('aria-current'); });
+  const navBtn = document.querySelector(`.nav-item[data-tab="${tab}"]`);
+  if (navBtn) { navBtn.classList.add('active'); navBtn.setAttribute('aria-current', 'page'); }
+  tabPanels.forEach(p => p.classList.remove('active'));
+  targetPanel.classList.add('active');
+  pageTitle.textContent = TAB_TITLES[tab] || tab;
+  // Trigger event khusus jika tab memerlukan render
+  if (tab === 'users')        renderUserList();
+  if (tab === 'certificates') renderCertificates();
+}
+
 navItems.forEach(item => {
   item.addEventListener('click', () => {
     const tab = item.dataset.tab;
-    navItems.forEach(n => { n.classList.remove('active'); n.removeAttribute('aria-current'); });
-    item.classList.add('active');
-    item.setAttribute('aria-current', 'page');
-    tabPanels.forEach(p => p.classList.remove('active'));
-    document.getElementById(`tab-${tab}`).classList.add('active');
-    pageTitle.textContent = TAB_TITLES[tab] || tab;
+    sessionStorage.setItem(LAST_TAB_KEY, tab); // simpan tab aktif
+    switchTab(tab);
     // Close sidebar on mobile
     if (window.innerWidth <= 768) closeSidebar();
   });
@@ -980,12 +996,7 @@ document.getElementById('add-user-btn')?.addEventListener('click', () => {
   showToast(`✅ User "${username}" ditambahkan.`, 'success');
 });
 
-// Init user list saat tab dibuka
-document.querySelectorAll('.nav-item').forEach(item => {
-  if (item.dataset.tab === 'users') {
-    item.addEventListener('click', () => renderUserList());
-  }
-});
+// (renderUserList dipanggil via switchTab() — tidak perlu listener duplikat di sini)
 
 
 // ============================================================
