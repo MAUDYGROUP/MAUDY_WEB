@@ -525,6 +525,39 @@ input[type="number"] { padding-left: 0.875rem !important; }
 }
 .btn-remove:hover { color: var(--danger); background: rgba(239,68,68,0.1); }
 
+/* ===== DRAG & DROP states ===== */
+.partner-row.dragging {
+  opacity: 0.4;
+  border-color: var(--border-acc);
+  background: var(--bg2);
+  cursor: grabbing;
+}
+
+.partner-row.drag-over {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(34,211,238,0.08), rgba(37,99,235,0.05));
+  box-shadow: 0 0 0 2px rgba(34,211,238,0.25);
+  transform: scale(1.01);
+  transition: all 0.15s ease;
+}
+
+.partner-row.drag-over::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 99px;
+  margin-bottom: 4px;
+  animation: dropLine 0.2s ease;
+}
+
+@keyframes dropLine {
+  from { opacity: 0; transform: scaleX(0.5); }
+  to   { opacity: 1; transform: scaleX(1); }
+}
+
+
+
 /* Testimoni rows */
 .testi-row {
   background: var(--bg3);

@@ -328,24 +328,31 @@ function updateStatPreviews() {
 // ============================================================
 // PARTNERS LIST
 // ============================================================
+// PARTNERS LIST + DRAG & DROP REORDER
+// ============================================================
+let dragSrc = null;  // elemen yang sedang di-drag
+let dragPlaceholder = null;  // placeholder visual
+
 function renderPartners() {
   const list = document.getElementById('partners-list');
   list.innerHTML = '';
   data.partners.forEach((p, idx) => {
     list.appendChild(createPartnerRow(p, idx));
   });
+  initPartnerDragDrop();
 }
 
 function createPartnerRow(name, idx) {
   const row = document.createElement('div');
   row.className = 'partner-row';
   row.dataset.idx = idx;
+  row.draggable = true;
   row.innerHTML = `
-    <span class="drag-handle" title="Seret untuk urutkan" aria-hidden="true">
+    <span class="drag-handle" title="Seret untuk mengubah urutan" aria-hidden="true">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
     </span>
     <input type="text" value="${escapeHtml(name)}" placeholder="Nama partner" aria-label="Nama partner ${idx + 1}" />
-    <button class="btn-remove" title="Hapus partner" aria-label="Hapus ${name}">
+    <button class="btn-remove" title="Hapus partner" aria-label="Hapus ${escapeHtml(name)}">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
     </button>
   `;
@@ -359,12 +366,100 @@ function createPartnerRow(name, idx) {
   return row;
 }
 
+function initPartnerDragDrop() {
+  const list = document.getElementById('partners-list');
+  const rows  = list.querySelectorAll('.partner-row');
+
+  rows.forEach(row => {
+    // ---- dragstart: ambil elemen ----
+    row.addEventListener('dragstart', (e) => {
+      dragSrc = row;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', row.dataset.idx);
+      // Delay agar clone tidak tampak saat visual hilang
+      setTimeout(() => row.classList.add('dragging'), 0);
+    });
+
+    // ---- dragend: bersihkan state ----
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      list.querySelectorAll('.partner-row').forEach(r => r.classList.remove('drag-over'));
+      if (dragPlaceholder && dragPlaceholder.parentNode) {
+        dragPlaceholder.parentNode.removeChild(dragPlaceholder);
+      }
+      dragPlaceholder = null;
+      dragSrc = null;
+      // Sync data array dari urutan DOM
+      syncPartnersFromDOM();
+    });
+
+    // ---- dragover: tampilkan posisi drop ----
+    row.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (!dragSrc || dragSrc === row) return;
+      list.querySelectorAll('.partner-row').forEach(r => r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+
+    // ---- dragleave: hapus highlight ----
+    row.addEventListener('dragleave', (e) => {
+      if (!row.contains(e.relatedTarget)) {
+        row.classList.remove('drag-over');
+      }
+    });
+
+    // ---- drop: pindahkan elemen ----
+    row.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (!dragSrc || dragSrc === row) return;
+      row.classList.remove('drag-over');
+
+      // Tentukan posisi: atas atau bawah dari row target
+      const rect   = row.getBoundingClientRect();
+      const midY   = rect.top + rect.height / 2;
+      const before = e.clientY < midY;
+
+      if (before) {
+        list.insertBefore(dragSrc, row);
+      } else {
+        list.insertBefore(dragSrc, row.nextSibling);
+      }
+
+      syncPartnersFromDOM();
+    });
+
+    // ---- Hanya drag handle yang bisa mulai drag ----
+    const handle = row.querySelector('.drag-handle');
+    const input  = row.querySelector('input');
+
+    handle.style.cursor = 'grab';
+    // Input tidak boleh trigger drag
+    input.addEventListener('mousedown', (e) => e.stopPropagation());
+    input.addEventListener('dragstart', (e) => e.preventDefault());
+  });
+}
+
+// Sinkronisasi data.partners dari urutan row di DOM
+function syncPartnersFromDOM() {
+  const list   = document.getElementById('partners-list');
+  const inputs = list.querySelectorAll('.partner-row input');
+  data.partners = Array.from(inputs).map(inp => inp.value);
+  // Update idx dataset masing-masing row
+  list.querySelectorAll('.partner-row').forEach((row, i) => {
+    row.dataset.idx = i;
+    const inp = row.querySelector('input');
+    if (inp) inp.setAttribute('aria-label', `Nama partner ${i + 1}`);
+  });
+}
+
 document.getElementById('add-partner-btn').addEventListener('click', () => {
   data.partners.push('');
   renderPartners();
   const inputs = document.querySelectorAll('#partners-list .partner-row input');
   if (inputs.length) inputs[inputs.length - 1].focus();
 });
+
 
 // ============================================================
 // TESTIMONIALS
