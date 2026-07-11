@@ -1,0 +1,34 @@
+# ============================================================
+# .dockerignore — MAUDY IT Solution
+# File yang TIDAK perlu masuk ke Docker image
+# ============================================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE & Editor
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+
+# Docs & config dev
+IDE PEMBUATAN
+implementation_plan.md
+README.md
+
+# Logs
+logs/
+*.log
+
+# Docker files sendiri (tidak perlu ada di dalam image)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Node (jika ada)
+node_modules/
+npm-debug.log*
