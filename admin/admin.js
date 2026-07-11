@@ -689,3 +689,173 @@ function init() {
 }
 
 init();
+
+// ============================================================
+// WATERMARK ADMIN PANEL
+// ============================================================
+const WM_STORAGE_KEY = 'maudy_watermark_config';
+
+const DEFAULT_WM = {
+  enabled:  true,
+  text:     '© MAUDY IT Solution',
+  opacity:  0.12,
+  fontSize: 16,
+  color:    '#ffffff',
+  repeat:   true,
+  angle:    -30,
+  spacing:  160,
+};
+
+function loadWMConfig() {
+  try {
+    const s = localStorage.getItem(WM_STORAGE_KEY);
+    return s ? Object.assign({}, DEFAULT_WM, JSON.parse(s)) : Object.assign({}, DEFAULT_WM);
+  } catch(e) { return Object.assign({}, DEFAULT_WM); }
+}
+
+function saveWMConfig(cfg) {
+  localStorage.setItem(WM_STORAGE_KEY, JSON.stringify(cfg));
+}
+
+function getWMFromForm() {
+  return {
+    enabled:  document.getElementById('wm-enabled').checked,
+    text:     document.getElementById('wm-text').value || '© MAUDY IT Solution',
+    opacity:  parseFloat(document.getElementById('wm-opacity').value),
+    fontSize: parseInt(document.getElementById('wm-fontsize').value),
+    color:    document.getElementById('wm-color').value,
+    repeat:   document.getElementById('wm-repeat').value === 'true',
+    angle:    parseInt(document.getElementById('wm-angle').value),
+    spacing:  parseInt(document.getElementById('wm-spacing').value),
+  };
+}
+
+function populateWMForm(cfg) {
+  document.getElementById('wm-enabled').checked     = cfg.enabled;
+  document.getElementById('wm-text').value          = cfg.text;
+  document.getElementById('wm-opacity').value       = cfg.opacity;
+  document.getElementById('wm-fontsize').value      = cfg.fontSize;
+  document.getElementById('wm-color').value         = cfg.color;
+  document.getElementById('wm-color-hex').value     = cfg.color;
+  document.getElementById('wm-repeat').value        = String(cfg.repeat);
+  document.getElementById('wm-angle').value         = cfg.angle;
+  document.getElementById('wm-spacing').value       = cfg.spacing;
+  updateWMLabels(cfg);
+}
+
+function updateWMLabels(cfg) {
+  document.getElementById('wm-opacity-val').textContent  = Math.round(cfg.opacity * 100) + '%';
+  document.getElementById('wm-fontsize-val').textContent = cfg.fontSize + 'px';
+  document.getElementById('wm-angle-val').textContent    = cfg.angle + '°';
+  document.getElementById('wm-spacing-val').textContent  = cfg.spacing + 'px';
+}
+
+// ---- Real-time Preview ----
+function drawWMPreview(cfg) {
+  const canvas = document.getElementById('wm-preview-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // Background
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(0, 0, W, H);
+
+  // Gambar placeholder
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, 'rgba(37,99,235,0.3)');
+  grad.addColorStop(1, 'rgba(34,211,238,0.2)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(20, 20, W - 40, H - 40);
+
+  // Teks placeholder
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.font = 'bold 18px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('[ Gambar Portfolio / Hero ]', W / 2, H / 2);
+  ctx.textAlign = 'left';
+
+  if (!cfg.enabled || !cfg.text) return;
+
+  // Watermark
+  ctx.save();
+  ctx.globalAlpha = parseFloat(cfg.opacity);
+  ctx.fillStyle = cfg.color;
+  const fs = parseInt(cfg.fontSize);
+  ctx.font = `bold ${fs}px Arial, sans-serif`;
+  ctx.textBaseline = 'middle';
+
+  const angle   = (parseInt(cfg.angle) * Math.PI) / 180;
+  const spacing = parseInt(cfg.spacing);
+
+  if (cfg.repeat === true || cfg.repeat === 'true') {
+    ctx.translate(W / 2, H / 2);
+    ctx.rotate(angle);
+    const diag = Math.ceil(Math.sqrt(W * W + H * H));
+    for (let y = -diag; y < diag; y += spacing) {
+      for (let x = -diag; x < diag * 2; x += spacing * 2.5) {
+        ctx.fillText(cfg.text, x, y);
+      }
+    }
+  } else {
+    ctx.translate(W / 2, H / 2);
+    ctx.rotate(angle);
+    const tw = ctx.measureText(cfg.text).width;
+    ctx.fillText(cfg.text, -tw / 2, 0);
+  }
+  ctx.restore();
+}
+
+// ---- Bind events saat tab watermark aktif ----
+function initWMPanel() {
+  const cfg = loadWMConfig();
+  populateWMForm(cfg);
+  drawWMPreview(cfg);
+
+  // Live update saat form berubah
+  const liveInputs = ['wm-enabled','wm-text','wm-opacity','wm-fontsize','wm-color','wm-repeat','wm-angle','wm-spacing'];
+  liveInputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      const current = getWMFromForm();
+      updateWMLabels(current);
+      drawWMPreview(current);
+    });
+    el.addEventListener('change', () => {
+      const current = getWMFromForm();
+      updateWMLabels(current);
+      drawWMPreview(current);
+    });
+  });
+
+  // Sync color picker <-> hex input
+  document.getElementById('wm-color').addEventListener('input', (e) => {
+    document.getElementById('wm-color-hex').value = e.target.value;
+  });
+  document.getElementById('wm-color-hex').addEventListener('input', (e) => {
+    const val = e.target.value;
+    if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+      document.getElementById('wm-color').value = val;
+    }
+  });
+
+  // Simpan watermark config
+  document.getElementById('wm-save-btn').addEventListener('click', () => {
+    const cfg = getWMFromForm();
+    saveWMConfig(cfg);
+    showToast('✅ Pengaturan watermark disimpan! Reload website untuk melihat efeknya.', 'success');
+  });
+}
+
+// Inisialisasi saat tab watermark dibuka (lazy)
+let wmInited = false;
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if (item.dataset.tab === 'watermark' && !wmInited) {
+      wmInited = true;
+      setTimeout(initWMPanel, 100); // tunggu panel aktif
+    }
+  });
+});
