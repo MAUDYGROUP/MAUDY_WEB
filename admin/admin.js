@@ -92,16 +92,49 @@ const DEFAULT_DATA = {
 };
 
 // ============================================================
-// AUTH MANAGEMENT
+// AUTH MANAGEMENT — MULTI USER
 // ============================================================
-function getCredentials() {
-  const stored = localStorage.getItem(AUTH_KEY);
-  if (stored) return JSON.parse(stored);
-  return { username: 'admin', password: 'maudy2025' };
+const USERS_KEY = 'maudy_admin_users';  // array of { username, password, role }
+
+/** Ambil semua user. Default: 1 admin jika kosong. */
+function getUsers() {
+  try {
+    const raw = localStorage.getItem(USERS_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr) && arr.length > 0) return arr;
+    }
+  } catch (_) {}
+  // Migrasi dari sistem lama (single user di AUTH_KEY)
+  try {
+    const legacy = localStorage.getItem(AUTH_KEY);
+    if (legacy) {
+      const old = JSON.parse(legacy);
+      if (old.username && old.password) {
+        const users = [{ username: old.username, password: old.password, role: 'admin' }];
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        return users;
+      }
+    }
+  } catch (_) {}
+  // Default
+  return [{ username: 'admin', password: 'maudy2025', role: 'admin' }];
 }
 
+function saveUsers(users) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+/** Backward-compat helpers */
+function getCredentials() {
+  const users = getUsers();
+  return users[0]; // credential aktif = user pertama (admin utama)
+}
 function saveCredentials(username, password) {
-  localStorage.setItem(AUTH_KEY, JSON.stringify({ username, password }));
+  // Jangan pakai ini lagi — gunakan saveUsers()
+  const users = getUsers();
+  users[0] = { ...users[0], username, password };
+  saveUsers(users);
 }
 
 function isLoggedIn() {
@@ -109,12 +142,13 @@ function isLoggedIn() {
 }
 
 function login(user, pass) {
-  const creds = getCredentials();
-  return user === creds.username && pass === creds.password;
+  const users = getUsers();
+  return users.some(u => u.username === user && u.password === pass);
 }
 
 function logout() {
   sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem('maudy_current_user');
   showLogin();
 }
 
@@ -200,6 +234,7 @@ loginForm.addEventListener('submit', (e) => {
   }
   if (login(user, pass)) {
     sessionStorage.setItem(SESSION_KEY, 'true');
+    sessionStorage.setItem('maudy_current_user', user);
     showAdmin();
   } else {
     loginError.textContent = 'Username atau password salah.';
@@ -211,10 +246,18 @@ loginForm.addEventListener('submit', (e) => {
 
 logoutBtn.addEventListener('click', logout);
 
-// Toggle password visibility
+// Toggle password visibility (login form)
 document.getElementById('toggle-pass').addEventListener('click', () => {
   const inp = document.getElementById('admin-pass');
   inp.type = inp.type === 'password' ? 'text' : 'password';
+});
+
+// Toggle password visibility (tambah user form - menggunakan event delegation)
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#toggle-new-pass')) {
+    const inp = document.getElementById('new-user-pass');
+    if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
 });
 
 // ============================================================
@@ -228,6 +271,8 @@ const TAB_TITLES = {
   social:       'Media Sosial',
   partners:     'Partner & Rekanan',
   testimonials: 'Testimoni',
+  certificates: 'Sertifikat',
+  users:        'Manajemen User',
   security:     'Keamanan',
 };
 
@@ -705,7 +750,7 @@ function getVal(id) {
 }
 
 // ============================================================
-// SECURITY — CHANGE PASSWORD
+// SECURITY — CHANGE PASSWORD (Admin Utama)
 // ============================================================
 document.getElementById('change-pass-btn').addEventListener('click', () => {
   const secStatus = document.getElementById('sec-status');
@@ -717,20 +762,31 @@ document.getElementById('change-pass-btn').addEventListener('click', () => {
   const newPass    = document.getElementById('sec-pass-new').value;
   const confirmPass= document.getElementById('sec-pass-confirm').value;
 
-  const creds = getCredentials();
+  const currentUser = sessionStorage.getItem('maudy_current_user') || getUsers()[0].username;
+  const users = getUsers();
+  const myIdx = users.findIndex(u => u.username === currentUser);
+  const me    = myIdx >= 0 ? users[myIdx] : users[0];
 
   if (!oldPass) { showSecStatus('error', 'Masukkan password lama.'); return; }
-  if (oldPass !== creds.password) { showSecStatus('error', 'Password lama salah.'); return; }
+  if (oldPass !== me.password) { showSecStatus('error', 'Password lama salah.'); return; }
   if (newPass.length < 6) { showSecStatus('error', 'Password baru minimal 6 karakter.'); return; }
   if (newPass !== confirmPass) { showSecStatus('error', 'Konfirmasi password tidak cocok.'); return; }
 
-  const username = newUser || creds.username;
-  saveCredentials(username, newPass);
+  const username = newUser || me.username;
+  // Cek duplikat username (kecuali diri sendiri)
+  if (username !== me.username && users.some(u => u.username === username)) {
+    showSecStatus('error', `Username "${username}" sudah digunakan.`); return;
+  }
+  users[myIdx >= 0 ? myIdx : 0] = { ...me, username, password: newPass };
+  saveUsers(users);
+  sessionStorage.setItem('maudy_current_user', username);
   showSecStatus('success', `✅ Kredensial berhasil diubah! Username: ${username}`);
   document.getElementById('sec-user').value = '';
   document.getElementById('sec-pass-old').value = '';
   document.getElementById('sec-pass-new').value = '';
   document.getElementById('sec-pass-confirm').value = '';
+  // Refresh user list jika sedang di tab users
+  renderUserList();
 });
 
 function showSecStatus(type, msg) {
@@ -739,6 +795,198 @@ function showSecStatus(type, msg) {
   el.textContent = msg;
   el.style.display = 'block';
 }
+
+// ============================================================
+// USER MANAGEMENT
+// ============================================================
+function renderUserList() {
+  const list = document.getElementById('user-list');
+  if (!list) return;
+  const users = getUsers();
+  const currentUser = sessionStorage.getItem('maudy_current_user') || users[0].username;
+
+  list.innerHTML = '';
+  users.forEach((u, idx) => {
+    const isMe = u.username === currentUser;
+    const row  = document.createElement('div');
+    row.className = 'user-row' + (isMe ? ' user-row-me' : '');
+    row.dataset.idx = idx;
+    row.innerHTML = `
+      <div class="user-row-info">
+        <div class="user-avatar">${u.username[0].toUpperCase()}</div>
+        <div>
+          <div class="user-name">${escapeHtml(u.username)} ${isMe ? '<span class="user-me-badge">Anda</span>' : ''}</div>
+          <div class="user-role">${u.role || 'admin'}</div>
+        </div>
+      </div>
+      <div class="user-row-actions">
+        <button class="btn-edit-user" data-idx="${idx}" title="Ganti Password">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Ganti Password
+        </button>
+        ${users.length > 1 && !isMe
+          ? `<button class="btn-remove user-del-btn" data-idx="${idx}" title="Hapus User">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+             </button>`
+          : ''}
+      </div>
+    `;
+    list.appendChild(row);
+  });
+
+  // Event: hapus user
+  list.querySelectorAll('.user-del-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      const users = getUsers();
+      if (users.length <= 1) { showToast('❌ Minimal 1 user harus ada.', 'error'); return; }
+      if (!confirm(`Hapus user "${users[idx].username}"?`)) return;
+      users.splice(idx, 1);
+      saveUsers(users);
+      renderUserList();
+      showToast('✅ User dihapus.', 'success');
+    });
+  });
+
+  // Event: ganti password user
+  list.querySelectorAll('.btn-edit-user').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      openChangePassModal(idx);
+    });
+  });
+}
+
+// ===== Modal ganti password =====
+function openChangePassModal(userIdx) {
+  let modal = document.getElementById('user-pass-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'user-pass-modal';
+    modal.className = 'user-modal-overlay';
+    modal.innerHTML = `
+      <div class="user-modal">
+        <div class="user-modal-header">
+          <h3 id="user-modal-title">Ganti Password</h3>
+          <button id="user-modal-close" class="user-modal-close" type="button" aria-label="Tutup">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="user-modal-body">
+          <p id="user-modal-desc" style="color:var(--text2);font-size:.88rem;margin-bottom:1rem"></p>
+          <div class="form-group">
+            <label>Password Baru <span style="color:var(--danger)">*</span></label>
+            <div style="position:relative">
+              <input type="password" id="modal-new-pass" placeholder="Min. 6 karakter" autocomplete="new-password" />
+              <button type="button" class="pass-toggle" id="modal-toggle-pass" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Konfirmasi Password <span style="color:var(--danger)">*</span></label>
+            <input type="password" id="modal-confirm-pass" placeholder="Ulangi password baru" autocomplete="new-password" />
+          </div>
+          <div id="modal-status" class="form-status" style="display:none"></div>
+        </div>
+        <div class="user-modal-footer">
+          <button id="modal-cancel" class="btn-secondary" type="button">Batal</button>
+          <button id="modal-save" class="btn-save" type="button">Simpan Password</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector('#user-modal-close').addEventListener('click', closePassModal);
+    modal.querySelector('#modal-cancel').addEventListener('click', closePassModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closePassModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePassModal(); });
+    modal.querySelector('#modal-toggle-pass').addEventListener('click', () => {
+      const inp = modal.querySelector('#modal-new-pass');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    });
+  }
+
+  // Set user context
+  const users = getUsers();
+  const u = users[userIdx];
+  modal.querySelector('#user-modal-title').textContent = `Ganti Password — ${u.username}`;
+  modal.querySelector('#user-modal-desc').textContent  = `Masukkan password baru untuk user "${u.username}".`;
+  modal.querySelector('#modal-new-pass').value     = '';
+  modal.querySelector('#modal-confirm-pass').value = '';
+  modal.querySelector('#modal-status').style.display = 'none';
+
+  modal.querySelector('#modal-save').onclick = () => {
+    const np = modal.querySelector('#modal-new-pass').value;
+    const cp = modal.querySelector('#modal-confirm-pass').value;
+    const statusEl = modal.querySelector('#modal-status');
+    statusEl.style.display = 'none';
+    if (np.length < 6) {
+      statusEl.className = 'form-status error'; statusEl.textContent = 'Password minimal 6 karakter.'; statusEl.style.display = 'block'; return;
+    }
+    if (np !== cp) {
+      statusEl.className = 'form-status error'; statusEl.textContent = 'Konfirmasi tidak cocok.'; statusEl.style.display = 'block'; return;
+    }
+    const freshUsers = getUsers();
+    freshUsers[userIdx] = { ...freshUsers[userIdx], password: np };
+    saveUsers(freshUsers);
+    showToast(`✅ Password "${u.username}" berhasil diubah.`, 'success');
+    closePassModal();
+  };
+
+  modal.removeAttribute('hidden');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => modal.querySelector('#modal-new-pass')?.focus(), 100);
+}
+
+function closePassModal() {
+  const modal = document.getElementById('user-pass-modal');
+  if (modal) { modal.setAttribute('hidden', ''); document.body.style.overflow = ''; }
+}
+
+// ===== Tambah user baru =====
+document.getElementById('add-user-btn')?.addEventListener('click', () => {
+  const usernameEl = document.getElementById('new-username');
+  const passEl     = document.getElementById('new-user-pass');
+  const statusEl   = document.getElementById('add-user-status');
+  statusEl.style.display = 'none';
+
+  const username = usernameEl.value.trim();
+  const password = passEl.value;
+
+  if (!username) {
+    statusEl.className = 'form-status error'; statusEl.textContent = 'Isi nama user.'; statusEl.style.display = 'block'; return;
+  }
+  if (password.length < 6) {
+    statusEl.className = 'form-status error'; statusEl.textContent = 'Password minimal 6 karakter.'; statusEl.style.display = 'block'; return;
+  }
+
+  const users = getUsers();
+  if (users.some(u => u.username === username)) {
+    statusEl.className = 'form-status error'; statusEl.textContent = `Username "${username}" sudah ada.`; statusEl.style.display = 'block'; return;
+  }
+  if (users.length >= 10) {
+    statusEl.className = 'form-status error'; statusEl.textContent = 'Maksimum 10 user.'; statusEl.style.display = 'block'; return;
+  }
+
+  users.push({ username, password, role: 'admin' });
+  saveUsers(users);
+  usernameEl.value = '';
+  passEl.value = '';
+  statusEl.className = 'form-status success';
+  statusEl.textContent = `✅ User "${username}" berhasil ditambahkan.`;
+  statusEl.style.display = 'block';
+  renderUserList();
+  showToast(`✅ User "${username}" ditambahkan.`, 'success');
+});
+
+// Init user list saat tab dibuka
+document.querySelectorAll('.nav-item').forEach(item => {
+  if (item.dataset.tab === 'users') {
+    item.addEventListener('click', () => renderUserList());
+  }
+});
+
 
 // ============================================================
 // DASHBOARD UPDATE

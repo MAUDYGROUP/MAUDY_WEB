@@ -658,7 +658,181 @@ input[type="number"] { padding-left: 0.875rem !important; }
 
 
 
+/* ===== USER MANAGEMENT ===== */
+.user-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.875rem 1rem;
+  transition: all var(--trans);
+  flex-wrap: wrap;
+}
+.user-row:hover { border-color: var(--border-acc); }
+.user-row-me { border-color: rgba(37,99,235,0.3); background: rgba(37,99,235,0.06); }
+
+.user-row-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #22D3EE);
+  color: white;
+  font-weight: 800;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-me-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(37,99,235,0.15);
+  color: var(--accent);
+  border: 1px solid rgba(37,99,235,0.25);
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.user-role {
+  font-size: 0.78rem;
+  color: var(--text3);
+  text-transform: capitalize;
+}
+
+.user-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-edit-user {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius);
+  background: rgba(37,99,235,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(37,99,235,0.2);
+  cursor: pointer;
+  transition: all var(--trans);
+  white-space: nowrap;
+}
+.btn-edit-user:hover { background: rgba(37,99,235,0.2); }
+
+/* Modal ganti password */
+.user-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.user-modal-overlay[hidden] { display: none; }
+
+.user-modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.5);
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+  animation: modal-pop 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes modal-pop {
+  from { transform: scale(0.88); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.user-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.user-modal-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.user-modal-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--trans);
+}
+.user-modal-close:hover { color: var(--danger); border-color: var(--danger); }
+
+.user-modal-body { padding: 1.25rem 1.5rem; }
+
+.user-modal-footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.btn-secondary {
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--trans);
+}
+.btn-secondary:hover { border-color: var(--border-acc); color: var(--text); }
+
 /* Testimoni rows */
+
 
 /* ===== CERTIFICATES ADMIN ===== */
 .cert-admin-list {
