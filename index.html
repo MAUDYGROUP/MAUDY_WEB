@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MAUDY IT Solution — Perusahaan IT Solution profesional menyediakan service komputer, instalasi jaringan, pembuatan website, software development, cloud server, keamanan CCTV, dan support IT 24/7 di Indonesia." />
+  <meta name="keywords" content="IT Solution, service komputer, instalasi jaringan, pembuatan website, software development, cloud server, cyber security, CCTV, mikrotik, fiber optic, VPN, support IT, managed service" />
+  <meta name="author" content="MAUDY IT Solution" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0F172A" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://maudyitsolution.com/" />
+  <meta property="og:title" content="MAUDY IT Solution — Transforming Business Through Innovative Technology" />
+  <meta property="og:description" content="Solusi IT terlengkap untuk bisnis Anda. Service komputer, jaringan, website, software, cloud & keamanan." />
+  <meta property="og:image" content="assets/hero-bg.png" />
+  <meta property="og:locale" content="id_ID" />
+  <meta property="og:locale:alternate" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MAUDY IT Solution" />
+  <meta name="twitter:description" content="Solusi IT terlengkap untuk bisnis Anda. Service, jaringan, website, cloud, keamanan." />
+  <meta name="twitter:image" content="assets/hero-bg.png" />
+
+  <!-- Canonical & hreflang -->
+  <link rel="canonical" href="https://maudyitsolution.com/" />
+  <link rel="alternate" hreflang="id" href="https://maudyitsolution.com/" />
+  <link rel="alternate" hreflang="en" href="https://maudyitsolution.com/" />
+
+  <title>MAUDY IT Solution — Transforming Business Through Innovative Technology</title>
+
+  <!-- Favicon (inline SVG) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232563EB'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='36' font-family='Arial' font-weight='bold' fill='white'%3EM%3C/text%3E%3C/svg%3E" />
+
+  <!-- Preconnect performance hints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Google Fonts — display=swap for performance -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://maudyitsolution.com/#organization",
+        "name": "MAUDY IT Solution",
+        "url": "https://maudyitsolution.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://maudyitsolution.com/assets/hero-bg.png"
+        },
+        "description": "Perusahaan IT Solution profesional yang menyediakan berbagai layanan teknologi informasi termasuk service komputer, instalasi jaringan, pembuatan website, software development, cloud server, dan keamanan IT.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "ID"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer service",
+          "availableLanguage": ["Indonesian", "English"],
+          "hoursAvailable": "Mo-Su 00:00-24:00"
+        },
+        "areaServed": "ID",
+        "knowsLanguage": ["id", "en"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://maudyitsolution.com/#website",
+        "url": "https://maudyitsolution.com",
+        "name": "MAUDY IT Solution",
+        "publisher": {"@id": "https://maudyitsolution.com/#organization"}
+      }
+    ]
+  }
+  </script>
+</head>
+
+<body>
+  <!-- ========== PAGE LOADER ========== -->
+  <div id="loader" aria-hidden="true" role="status">
+    <div class="loader-inner">
+      <div class="loader-logo">M</div>
+      <div class="loader-bar"><div class="loader-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ========== SCROLL PROGRESS ========== -->
+  <div id="scroll-progress" aria-hidden="true" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+  <!-- ========== NAVIGATION ========== -->
+  <header>
+    <nav id="navbar" role="navigation" aria-label="Navigasi utama">
+      <div class="container nav-container">
+        <!-- Brand / Logo -->
+        <a href="#home" class="nav-brand" aria-label="MAUDY IT Solution — Beranda">
+          <svg class="brand-icon" width="38" height="38" viewBox="0 0 38 38" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+            <rect width="38" height="38" rx="10" fill="url(#logoGrad)"/>
+            <text x="19" y="26" text-anchor="middle" font-size="20" font-family="Poppins,sans-serif" font-weight="800" fill="white">M</text>
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#2563EB"/>
+                <stop offset="1" stop-color="#22D3EE"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="brand-name">MAUDY <span class="brand-accent">IT</span> Solution</span>
+        </a>
+
+        <!-- Desktop Menu -->
+        <ul class="nav-menu" id="nav-menu" role="list">
+          <li role="listitem"><a href="#home" class="nav-link active" data-i18n="nav_home">Beranda</a></li>
+          <li role="listitem"><a href="#services" class="nav-link" data-i18n="nav_services">Layanan</a></li>
+          <li role="listitem"><a href="#about" class="nav-link" data-i18n="nav_about">Tentang</a></li>
+          <li role="listitem"><a href="#portfolio" class="nav-link" data-i18n="nav_portfolio">Portofolio</a></li>
+          <li role="listitem"><a href="#testimonials" class="nav-link" data-i18n="nav_testimonials">Testimoni</a></li>
+          <li role="listitem"><a href="#contact" class="nav-link" data-i18n="nav_contact">Kontak</a></li>
+        </ul>
+
+        <!-- Controls -->
+        <div class="nav-controls">
+          <button id="lang-toggle" class="control-btn lang-btn" aria-label="Ganti bahasa" title="Toggle Language">
+            <span class="lang-flag">🇮🇩</span>
+            <span class="lang-code">ID</span>
+          </button>
+          <button id="theme-toggle" class="control-btn theme-btn" aria-label="Ganti tema gelap/terang" title="Toggle Dark/Light Mode">
+            <svg id="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            <svg id="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
+          <a href="#contact" class="btn btn-primary nav-cta" data-i18n="nav_cta">Hubungi Kami</a>
+          <button class="hamburger" id="hamburger" aria-label="Buka menu" aria-expanded="false" aria-controls="nav-menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ========== HERO ========== -->
+    <section id="home" class="hero" aria-label="Hero Section">
+      <canvas id="particles-canvas" aria-hidden="true"></canvas>
+      <div class="hero-bg-image" aria-hidden="true"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
+
+      <div class="container hero-container">
+        <div class="hero-content" data-animate="fade-up">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            <span data-i18n="hero_badge">⚡ IT Solution Terpercaya #1</span>
+          </div>
+
+          <h1 class="hero-title">
+            <span data-i18n="hero_title1">Transforming Business</span><br />
+            <span class="gradient-text" data-i18n="hero_title2">Through Innovative</span><br />
+            <span data-i18n="hero_title3">Technology</span>
+          </h1>
+
+          <p class="hero-desc" data-i18n="hero_desc">
+            Solusi IT terlengkap untuk mendukung pertumbuhan bisnis Anda. Dari service komputer, instalasi jaringan, pengembangan software hingga keamanan sistem — semua ada di sini.
+          </p>
+
+          <div class="hero-btns">
+            <a href="#services" class="btn btn-primary btn-lg" data-i18n="hero_btn1">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Lihat Layanan
+            </a>
+            <a href="#contact" class="btn btn-outline btn-lg" data-i18n="hero_btn2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              Konsultasi Gratis
+            </a>
+          </div>
+
+          <div class="hero-trust">
+            <span data-i18n="hero_trust">Dipercaya oleh 50+ klien</span>
+            <div class="trust-avatars" aria-hidden="true">
+              <div class="avatar" style="background:linear-gradient(135deg,#667eea,#764ba2)">A</div>
+              <div class="avatar" style="background:linear-gradient(135deg,#f6d365,#fda085)">B</div>
+              <div class="avatar" style="background:linear-gradient(135deg,#84fab0,#8fd3f4)">C</div>
+              <div class="avatar" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">D</div>
+            </div>
+            <div class="trust-stars" aria-label="Rating 5 bintang">⭐⭐⭐⭐⭐</div>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="floating-card card-1">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <div><div class="fc-title" data-i18n="fc1_title">Uptime Server</div><div class="fc-val">99.9%</div></div>
+          </div>
+          <div class="floating-card card-2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div><div class="fc-title" data-i18n="fc2_title">Keamanan</div><div class="fc-val">100%</div></div>
+          </div>
+          <div class="floating-card card-3">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div><div class="fc-title" data-i18n="fc3_title">Support</div><div class="fc-val">24/7</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scroll-indicator" aria-hidden="true">
+        <div class="scroll-arrow"></div>
+        <span data-i18n="scroll_down">Scroll ke bawah</span>
+      </div>
+    </section>
+
+    <!-- ========== STATS ========== -->
+    <section id="stats" class="stats-section" aria-label="Statistik Perusahaan">
+      <div class="container">
+        <div class="stats-grid">
+          <article class="stat-card" data-animate="fade-up" data-delay="0">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-number"><span class="counter" data-target="10">0</span><span>+</span></div>
+            <p class="stat-label" data-i18n="stat1">Tahun Pengalaman</p>
+          </article>
+          <article class="stat-card" data-animate="fade-up" data-delay="100">
+            <div class="stat-icon">✅</div>
+            <div class="stat-number"><span class="counter" data-target="150">0</span><span>+</span></div>
+            <p class="stat-label" data-i18n="stat2">Proyek Selesai</p>
+          </article>
+          <article class="stat-card" data-animate="fade-up" data-delay="200">
+            <div class="stat-icon">😊</div>
+            <div class="stat-number"><span class="counter" data-target="80">0</span><span>+</span></div>
+            <p class="stat-label" data-i18n="stat3">Klien Puas</p>
+          </article>
+          <article class="stat-card" data-animate="fade-up" data-delay="300">
+            <div class="stat-icon">🌐</div>
+            <div class="stat-number"><span class="counter" data-target="38">0</span><span>+</span></div>
+            <p class="stat-label" data-i18n="stat4">Jenis Layanan</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SERVICES ========== -->
+    <section id="services" class="services-section" aria-labelledby="services-heading">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-badge" data-i18n="services_badge">LAYANAN KAMI</span>
+          <h2 id="services-heading" data-i18n="services_title">Solusi IT Terlengkap<br/>untuk Bisnis Anda</h2>
+          <p class="section-desc" data-i18n="services_desc">Kami menyediakan lebih dari 38 jenis layanan teknologi informasi yang komprehensif untuk mendukung operasional dan pertumbuhan bisnis Anda.</p>
+        </div>
+
+        <div class="services-grid">
+          <!-- Card 1 -->
+          <article class="service-card" data-animate="fade-up" data-delay="0">
+            <div class="service-icon" style="--icon-color:#2563EB">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <h3 data-i18n="svc1_title">Hardware &amp; Repair</h3>
+            <p data-i18n="svc1_desc">Service &amp; sparepart komputer/laptop, instalasi sistem operasi Windows &amp; Linux, jual komputer &amp; laptop baru.</p>
+            <ul class="service-list" aria-label="Layanan Hardware">
+              <li>Service &amp; Sparepart Komputer</li>
+              <li>Jual Komputer &amp; Laptop</li>
+              <li>Instalasi OS Windows &amp; Linux</li>
+            </ul>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="service-card" data-animate="fade-up" data-delay="100">
+            <div class="service-icon" style="--icon-color:#0EA5E9">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 8a6 6 0 0112 0c0 6 3 8 3 8H3s3-2 3-8"/><path d="M21 16H3"/><circle cx="12" cy="2" r="1"/></svg>
+            </div>
+            <h3 data-i18n="svc2_title">Networking &amp; Infrastruktur</h3>
+            <p data-i18n="svc2_desc">Instalasi jaringan komputer, konfigurasi Mikrotik, wireless, fiber optic, dan internet broadband.</p>
+            <ul class="service-list" aria-label="Layanan Networking">
+              <li>Instalasi Jaringan Komputer</li>
+              <li>Setting Mikrotik</li>
+              <li>Wireless &amp; Fiber Optic</li>
+              <li>Instalasi Internet</li>
+            </ul>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="service-card" data-animate="fade-up" data-delay="200">
+            <div class="service-icon" style="--icon-color:#8B5CF6">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <h3 data-i18n="svc3_title">Software &amp; Web Development</h3>
+            <p data-i18n="svc3_desc">Pembuatan website profesional, pengembangan software custom, dan sistem informasi sesuai kebutuhan bisnis.</p>
+            <ul class="service-list" aria-label="Layanan Software">
+              <li>Pembuatan Website</li>
+              <li>Software Development</li>
+              <li>Pembuatan Sistem Informasi</li>
+            </ul>
+          </article>
+
+          <!-- Card 4 -->
+          <article class="service-card" data-animate="fade-up" data-delay="300">
+            <div class="service-icon" style="--icon-color:#22D3EE">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+            </div>
+            <h3 data-i18n="svc4_title">Cloud &amp; Server</h3>
+            <p data-i18n="svc4_desc">Setup &amp; maintenance VPS, instalasi server, cloud hosting, virtualisasi, dan backup data terpusat.</p>
+            <ul class="service-list" aria-label="Layanan Cloud">
+              <li>Setup VPS &amp; Cloud Server</li>
+              <li>Instalasi &amp; Maintenance Server</li>
+              <li>IP Public &amp; VPN IP</li>
+            </ul>
+          </article>
+
+          <!-- Card 5 -->
+          <article class="service-card" data-animate="fade-up" data-delay="400">
+            <div class="service-icon" style="--icon-color:#EF4444">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 data-i18n="svc5_title">Keamanan &amp; CCTV</h3>
+            <p data-i18n="svc5_desc">Instalasi CCTV, sistem keamanan gedung, access control, dan solusi keamanan digital terpadu.</p>
+            <ul class="service-list" aria-label="Layanan Keamanan">
+              <li>Instalasi CCTV</li>
+              <li>Security System</li>
+              <li>Access Control</li>
+            </ul>
+          </article>
+
+          <!-- Card 6 -->
+          <article class="service-card" data-animate="fade-up" data-delay="500">
+            <div class="service-icon" style="--icon-color:#10B981">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <h3 data-i18n="svc6_title">Monitoring &amp; Support IT</h3>
+            <p data-i18n="svc6_desc">Managed service, monitoring jaringan/server/CCTV 24/7, maintenance website, dan support IT profesional.</p>
+            <ul class="service-list" aria-label="Layanan Monitoring">
+              <li>Monitoring Jaringan &amp; Server</li>
+              <li>Managed Service</li>
+              <li>Maintenance &amp; Support IT</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== WHY CHOOSE US ========== -->
+    <section id="about" class="why-section" aria-labelledby="why-heading">
+      <div class="container">
+        <div class="why-grid">
+          <div class="why-content" data-animate="fade-right">
+            <span class="section-badge" data-i18n="why_badge">MENGAPA KAMI</span>
+            <h2 id="why-heading" data-i18n="why_title">Mengapa Memilih<br/>MAUDY IT Solution?</h2>
+            <p data-i18n="why_desc">Kami bukan sekadar penyedia layanan IT. Kami adalah mitra teknologi Anda yang berkomitmen untuk memberikan solusi terbaik, cepat, dan tepat sasaran.</p>
+
+            <div class="why-list">
+              <div class="why-item" data-animate="fade-right" data-delay="100">
+                <div class="why-icon">🏅</div>
+                <div>
+                  <h3 data-i18n="why1_title">Tim Bersertifikat</h3>
+                  <p data-i18n="why1_desc">Teknisi kami bersertifikat resmi dengan kompetensi terbukti di bidangnya.</p>
+                </div>
+              </div>
+              <div class="why-item" data-animate="fade-right" data-delay="200">
+                <div class="why-icon">⚡</div>
+                <div>
+                  <h3 data-i18n="why2_title">Respons Cepat</h3>
+                  <p data-i18n="why2_desc">Garansi respons dalam 2 jam untuk setiap laporan masalah teknis.</p>
+                </div>
+              </div>
+              <div class="why-item" data-animate="fade-right" data-delay="300">
+                <div class="why-icon">🔒</div>
+                <div>
+                  <h3 data-i18n="why3_title">Keamanan Terjamin</h3>
+                  <p data-i18n="why3_desc">Sistem keamanan berlapis dengan enkripsi data dan proteksi penuh.</p>
+                </div>
+              </div>
+              <div class="why-item" data-animate="fade-right" data-delay="400">
+                <div class="why-icon">💬</div>
+                <div>
+                  <h3 data-i18n="why4_title">Support 24/7</h3>
+                  <p data-i18n="why4_desc">Tim support kami siap melayani Anda kapan saja, 24 jam 7 hari seminggu.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="why-visual" data-animate="fade-left">
+            <div class="tech-circle">
+              <div class="tech-ring ring-1"></div>
+              <div class="tech-ring ring-2"></div>
+              <div class="tech-ring ring-3"></div>
+              <div class="tech-center">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="1.5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div class="tech-dot dot-1">⚙️</div>
+              <div class="tech-dot dot-2">🌐</div>
+              <div class="tech-dot dot-3">☁️</div>
+              <div class="tech-dot dot-4">📡</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PORTFOLIO ========== -->
+    <section id="portfolio" class="portfolio-section" aria-labelledby="portfolio-heading">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-badge" data-i18n="portfolio_badge">PORTOFOLIO</span>
+          <h2 id="portfolio-heading" data-i18n="portfolio_title">Proyek Unggulan Kami</h2>
+          <p class="section-desc" data-i18n="portfolio_desc">Beberapa karya terbaik yang telah kami selesaikan untuk klien dari berbagai industri.</p>
+        </div>
+
+        <div class="portfolio-filter" role="group" aria-label="Filter portofolio">
+          <button class="filter-btn active" data-filter="all" data-i18n="filter_all">Semua</button>
+          <button class="filter-btn" data-filter="web" data-i18n="filter_web">Web &amp; Software</button>
+          <button class="filter-btn" data-filter="network" data-i18n="filter_network">Jaringan</button>
+          <button class="filter-btn" data-filter="security" data-i18n="filter_security">Keamanan</button>
+        </div>
+
+        <div class="portfolio-grid" id="portfolio-grid">
+          <article class="portfolio-card" data-category="web" data-animate="fade-up" data-delay="0">
+            <div class="portfolio-img">
+              <img src="assets/portfolio-web.png" alt="Dashboard Analytics Web Application" loading="lazy" width="600" height="400" />
+              <div class="portfolio-overlay">
+                <span class="portfolio-tag" data-i18n="ptag_web">Web Development</span>
+                <h3 data-i18n="p1_title">Sistem Analitik Bisnis</h3>
+                <p data-i18n="p1_desc">Dashboard analytics real-time untuk monitoring KPI bisnis perusahaan manufaktur.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="portfolio-card" data-category="network" data-animate="fade-up" data-delay="100">
+            <div class="portfolio-img">
+              <img src="assets/portfolio-network.png" alt="Network Infrastructure Monitoring Dashboard" loading="lazy" width="600" height="400" />
+              <div class="portfolio-overlay">
+                <span class="portfolio-tag" data-i18n="ptag_network">Infrastruktur Jaringan</span>
+                <h3 data-i18n="p2_title">Monitoring Jaringan Enterprise</h3>
+                <p data-i18n="p2_desc">Instalasi dan konfigurasi infrastruktur jaringan untuk gedung 10 lantai dengan 500+ node.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="portfolio-card" data-category="security" data-animate="fade-up" data-delay="200">
+            <div class="portfolio-img">
+              <img src="assets/portfolio-security.png" alt="Security CCTV Control Room" loading="lazy" width="600" height="400" />
+              <div class="portfolio-overlay">
+                <span class="portfolio-tag" data-i18n="ptag_security">Sistem Keamanan</span>
+                <h3 data-i18n="p3_title">Pusat Monitoring Keamanan</h3>
+                <p data-i18n="p3_desc">Instalasi CCTV dan security system terintegrasi untuk kompleks perkantoran modern.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== INDUSTRIES ========== -->
+    <section id="industries" class="industries-section" aria-labelledby="industries-heading">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-badge" data-i18n="industries_badge">INDUSTRI</span>
+          <h2 id="industries-heading" data-i18n="industries_title">Industri yang Kami Layani</h2>
+        </div>
+        <div class="industries-grid">
+          <div class="industry-card" data-animate="zoom-in" data-delay="0" aria-label="Manufaktur">
+            <div class="ind-icon">🏭</div>
+            <span data-i18n="ind1">Manufaktur</span>
+          </div>
+          <div class="industry-card" data-animate="zoom-in" data-delay="100" aria-label="Kesehatan">
+            <div class="ind-icon">🏥</div>
+            <span data-i18n="ind2">Kesehatan</span>
+          </div>
+          <div class="industry-card" data-animate="zoom-in" data-delay="200" aria-label="Pendidikan">
+            <div class="ind-icon">🎓</div>
+            <span data-i18n="ind3">Pendidikan</span>
+          </div>
+          <div class="industry-card" data-animate="zoom-in" data-delay="300" aria-label="Keuangan">
+            <div class="ind-icon">🏦</div>
+            <span data-i18n="ind4">Keuangan</span>
+          </div>
+          <div class="industry-card" data-animate="zoom-in" data-delay="400" aria-label="Pemerintahan">
+            <div class="ind-icon">🏛️</div>
+            <span data-i18n="ind5">Pemerintahan</span>
+          </div>
+          <div class="industry-card" data-animate="zoom-in" data-delay="500" aria-label="Ritel">
+            <div class="ind-icon">🛒</div>
+            <span data-i18n="ind6">Ritel</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TESTIMONIALS ========== -->
+    <section id="testimonials" class="testimonials-section" aria-labelledby="testimonials-heading">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-badge" data-i18n="testi_badge">TESTIMONI</span>
+          <h2 id="testimonials-heading" data-i18n="testi_title">Apa Kata Klien Kami?</h2>
+        </div>
+
+        <div class="testimonials-wrapper">
+          <div class="testimonials-track" id="testi-track" role="list">
+            <article class="testi-card" role="listitem">
+              <div class="testi-rating" aria-label="Rating 5 bintang">★★★★★</div>
+              <blockquote data-i18n="t1_text">"MAUDY IT Solution sangat profesional dalam menangani infrastruktur jaringan kami. Semua berjalan lancar dan tepat waktu."</blockquote>
+              <footer class="testi-author">
+                <div class="testi-avatar" style="background:linear-gradient(135deg,#667eea,#764ba2)" aria-hidden="true">B</div>
+                <div>
+                  <cite class="testi-name">Budi Santoso</cite>
+                  <span class="testi-role" data-i18n="t1_role">IT Manager, PT Maju Bersama</span>
+                </div>
+              </footer>
+            </article>
+
+            <article class="testi-card" role="listitem">
+              <div class="testi-rating" aria-label="Rating 5 bintang">★★★★★</div>
+              <blockquote data-i18n="t2_text">"Website yang dibuat sangat memuaskan, desain modern dan loading cepat. Support after-sales juga luar biasa responsif."</blockquote>
+              <footer class="testi-author">
+                <div class="testi-avatar" style="background:linear-gradient(135deg,#f6d365,#fda085)" aria-hidden="true">S</div>
+                <div>
+                  <cite class="testi-name">Siti Rahayu</cite>
+                  <span class="testi-role" data-i18n="t2_role">Direktur, CV Karya Digital</span>
+                </div>
+              </footer>
+            </article>
+
+            <article class="testi-card" role="listitem">
+              <div class="testi-rating" aria-label="Rating 5 bintang">★★★★★</div>
+              <blockquote data-i18n="t3_text">"Instalasi CCTV dan sistem keamanan berjalan sempurna. Tim teknisi sangat berpengalaman dan ramah."</blockquote>
+              <footer class="testi-author">
+                <div class="testi-avatar" style="background:linear-gradient(135deg,#84fab0,#8fd3f4)" aria-hidden="true">A</div>
+                <div>
+                  <cite class="testi-name">Ahmad Fauzi</cite>
+                  <span class="testi-role" data-i18n="t3_role">HRD Manager, PT Selaras Group</span>
+                </div>
+              </footer>
+            </article>
+
+            <article class="testi-card" role="listitem">
+              <div class="testi-rating" aria-label="Rating 5 bintang">★★★★★</div>
+              <blockquote data-i18n="t4_text">"Managed service mereka sangat membantu. Server kami selalu terpantau 24/7 dan masalah diselesaikan sebelum berdampak ke bisnis."</blockquote>
+              <footer class="testi-author">
+                <div class="testi-avatar" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)" aria-hidden="true">R</div>
+                <div>
+                  <cite class="testi-name">Rina Wijaya</cite>
+                  <span class="testi-role" data-i18n="t4_role">CTO, PT Tech Nusantara</span>
+                </div>
+              </footer>
+            </article>
+          </div>
+
+          <div class="testi-controls" aria-label="Kontrol carousel testimoni">
+            <button id="testi-prev" class="testi-btn" aria-label="Testimoni sebelumnya">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="testi-dots" id="testi-dots" role="tablist" aria-label="Pilih testimoni"></div>
+            <button id="testi-next" class="testi-btn" aria-label="Testimoni berikutnya">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PARTNERS ========== -->
+    <section id="partners" class="partners-section" aria-labelledby="partners-heading">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-badge" data-i18n="partners_badge">REKANAN</span>
+          <h2 id="partners-heading" data-i18n="partners_title">Partner &amp; Rekanan Kami</h2>
+        </div>
+        <div class="marquee-wrapper" aria-label="Logo partner kami">
+          <div class="marquee-track" aria-hidden="true">
+            <div class="partner-logo">Microsoft</div>
+            <div class="partner-logo">Cisco</div>
+            <div class="partner-logo">HP</div>
+            <div class="partner-logo">Dell</div>
+            <div class="partner-logo">Lenovo</div>
+            <div class="partner-logo">MikroTik</div>
+            <div class="partner-logo">Hikvision</div>
+            <div class="partner-logo">Ubiquiti</div>
+            <div class="partner-logo">TP-Link</div>
+            <div class="partner-logo">ASUS</div>
+            <!-- Duplicate for infinite loop -->
+            <div class="partner-logo">Microsoft</div>
+            <div class="partner-logo">Cisco</div>
+            <div class="partner-logo">HP</div>
+            <div class="partner-logo">Dell</div>
+            <div class="partner-logo">Lenovo</div>
+            <div class="partner-logo">MikroTik</div>
+            <div class="partner-logo">Hikvision</div>
+            <div class="partner-logo">Ubiquiti</div>
+            <div class="partner-logo">TP-Link</div>
+            <div class="partner-logo">ASUS</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CONTACT ========== -->
+    <section id="contact" class="contact-section" aria-labelledby="contact-heading">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-badge" data-i18n="contact_badge">KONTAK</span>
+          <h2 id="contact-heading" data-i18n="contact_title">Hubungi Kami Sekarang</h2>
+          <p class="section-desc" data-i18n="contact_desc">Dapatkan konsultasi gratis dan solusi terbaik untuk kebutuhan IT bisnis Anda.</p>
+        </div>
+
+        <div class="contact-grid">
+          <!-- Info -->
+          <div class="contact-info" data-animate="fade-right">
+            <div class="contact-item">
+              <div class="ci-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div>
+                <h3 data-i18n="ci1_title">Alamat</h3>
+                <p data-i18n="ci1_val">Jl. Teknologi No. 99, Kota Maju, Indonesia</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14z"/></svg>
+              </div>
+              <div>
+                <h3 data-i18n="ci2_title">Telepon / WhatsApp</h3>
+                <p><a href="tel:+6281234567890" class="contact-link">+62 812-3456-7890</a></p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <h3 data-i18n="ci3_title">Email</h3>
+                <p><a href="mailto:info@maudyitsolution.com" class="contact-link">info@maudyitsolution.com</a></p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div>
+                <h3 data-i18n="ci4_title">Jam Operasional</h3>
+                <p data-i18n="ci4_val">Senin – Sabtu: 08.00 – 17.00<br/>Support 24/7 tersedia</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form -->
+          <div class="contact-form-wrap" data-animate="fade-left">
+            <form id="contact-form" class="contact-form" novalidate action="#" method="POST" aria-label="Form Kontak">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="f-name" data-i18n="form_name">Nama Lengkap</label>
+                  <input type="text" id="f-name" name="name" required autocomplete="name" aria-required="true" placeholder="Budi Santoso" />
+                </div>
+                <div class="form-group">
+                  <label for="f-email" data-i18n="form_email">Email</label>
+                  <input type="email" id="f-email" name="email" required autocomplete="email" aria-required="true" placeholder="budi@perusahaan.com" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="f-phone" data-i18n="form_phone">No. Telepon</label>
+                  <input type="tel" id="f-phone" name="phone" autocomplete="tel" placeholder="+62 812-xxxx-xxxx" />
+                </div>
+                <div class="form-group">
+                  <label for="f-service" data-i18n="form_service">Layanan yang Dibutuhkan</label>
+                  <select id="f-service" name="service" aria-label="Pilih layanan">
+                    <option value="" data-i18n="form_select">— Pilih Layanan —</option>
+                    <option value="hardware" data-i18n="fs1">Hardware &amp; Repair</option>
+                    <option value="network" data-i18n="fs2">Jaringan &amp; Infrastruktur</option>
+                    <option value="software" data-i18n="fs3">Software &amp; Web Dev</option>
+                    <option value="cloud" data-i18n="fs4">Cloud &amp; Server</option>
+                    <option value="security" data-i18n="fs5">Keamanan &amp; CCTV</option>
+                    <option value="monitoring" data-i18n="fs6">Monitoring &amp; Support</option>
+                    <option value="other" data-i18n="fs7">Lainnya</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="f-message" data-i18n="form_message">Pesan / Deskripsi Kebutuhan</label>
+                <textarea id="f-message" name="message" rows="4" required aria-required="true" placeholder="Ceritakan kebutuhan IT Anda..."></textarea>
+              </div>
+              <button type="submit" id="form-submit" class="btn btn-primary btn-full">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                <span data-i18n="form_submit">Kirim Pesan</span>
+              </button>
+              <div id="form-status" class="form-status" aria-live="polite" role="status"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer" aria-label="Footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#home" class="nav-brand" aria-label="MAUDY IT Solution — Beranda">
+            <svg width="38" height="38" viewBox="0 0 38 38" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <rect width="38" height="38" rx="10" fill="url(#footerLogoGrad)"/>
+              <text x="19" y="26" text-anchor="middle" font-size="20" font-family="Poppins,sans-serif" font-weight="800" fill="white">M</text>
+              <defs>
+                <linearGradient id="footerLogoGrad" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#2563EB"/>
+                  <stop offset="1" stop-color="#22D3EE"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="brand-name">MAUDY <span class="brand-accent">IT</span> Solution</span>
+          </a>
+          <p data-i18n="footer_desc">Mitra teknologi terpercaya untuk mendukung transformasi digital bisnis Anda.</p>
+          <div class="social-links" aria-label="Media sosial kami">
+            <a href="#" class="social-btn" aria-label="Facebook MAUDY IT Solution">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+            </a>
+            <a href="#" class="social-btn" aria-label="Instagram MAUDY IT Solution">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" class="social-btn" aria-label="LinkedIn MAUDY IT Solution">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+            <a href="https://wa.me/6281234567890" class="social-btn" aria-label="WhatsApp MAUDY IT Solution" target="_blank" rel="noopener noreferrer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.004 2.003C6.478 2.003 2 6.481 2 12.005c0 1.77.47 3.448 1.267 4.914L2.003 21.997l5.196-1.235a9.982 9.982 0 004.805 1.223c5.525 0 10.003-4.478 10.003-10.003 0-2.672-1.04-5.183-2.929-7.073a9.958 9.958 0 00-7.074-2.906z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <nav class="footer-links" aria-label="Navigasi footer">
+          <h3 data-i18n="footer_nav">Navigasi</h3>
+          <ul role="list">
+            <li role="listitem"><a href="#home" data-i18n="nav_home">Beranda</a></li>
+            <li role="listitem"><a href="#services" data-i18n="nav_services">Layanan</a></li>
+            <li role="listitem"><a href="#about" data-i18n="nav_about">Tentang</a></li>
+            <li role="listitem"><a href="#portfolio" data-i18n="nav_portfolio">Portofolio</a></li>
+            <li role="listitem"><a href="#contact" data-i18n="nav_contact">Kontak</a></li>
+          </ul>
+        </nav>
+
+        <div class="footer-services">
+          <h3 data-i18n="footer_services">Layanan Utama</h3>
+          <ul role="list">
+            <li role="listitem" data-i18n="svc1_title">Hardware &amp; Repair</li>
+            <li role="listitem" data-i18n="svc2_title">Networking &amp; Infrastruktur</li>
+            <li role="listitem" data-i18n="svc3_title">Software &amp; Web Dev</li>
+            <li role="listitem" data-i18n="svc4_title">Cloud &amp; Server</li>
+            <li role="listitem" data-i18n="svc5_title">Keamanan &amp; CCTV</li>
+            <li role="listitem" data-i18n="svc6_title">Monitoring &amp; Support</li>
+          </ul>
+        </div>
+
+        <div class="footer-contact">
+          <h3 data-i18n="footer_contact_title">Kontak Cepat</h3>
+          <p>📍 <span data-i18n="ci1_val">Jl. Teknologi No. 99, Indonesia</span></p>
+          <p>📞 <a href="tel:+6281234567890" class="contact-link">+62 812-3456-7890</a></p>
+          <p>✉️ <a href="mailto:info@maudyitsolution.com" class="contact-link">info@maudyitsolution.com</a></p>
+          <a href="https://wa.me/6281234567890" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.004 2.003C6.478 2.003 2 6.481 2 12.005c0 1.77.47 3.448 1.267 4.914L2.003 21.997l5.196-1.235a9.982 9.982 0 004.805 1.223c5.525 0 10.003-4.478 10.003-10.003 0-2.672-1.04-5.183-2.929-7.073a9.958 9.958 0 00-7.074-2.906z"/></svg>
+            <span data-i18n="wa_btn">Chat WhatsApp</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p data-i18n="footer_copy">© 2025 MAUDY IT Solution. Seluruh hak cipta dilindungi undang-undang.</p>
+        <div class="footer-bottom-links">
+          <a href="#" data-i18n="footer_privacy">Kebijakan Privasi</a>
+          <a href="#" data-i18n="footer_terms">Syarat &amp; Ketentuan</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button id="back-to-top" class="back-to-top" aria-label="Kembali ke atas" title="Kembali ke atas">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <!-- WhatsApp Float Button -->
+  <a href="https://wa.me/6281234567890" class="wa-float" target="_blank" rel="noopener noreferrer" aria-label="Hubungi via WhatsApp">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.004 2.003C6.478 2.003 2 6.481 2 12.005c0 1.77.47 3.448 1.267 4.914L2.003 21.997l5.196-1.235a9.982 9.982 0 004.805 1.223c5.525 0 10.003-4.478 10.003-10.003 0-2.672-1.04-5.183-2.929-7.073a9.958 9.958 0 00-7.074-2.906z"/></svg>
+  </a>
+
+  <!-- Main Script (deferred) -->
+  <script src="script.js" defer></script>
+</body>
+</html>
