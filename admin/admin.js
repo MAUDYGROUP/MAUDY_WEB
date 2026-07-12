@@ -138,17 +138,20 @@ function saveCredentials(username, password) {
 }
 
 function isLoggedIn() {
-  return sessionStorage.getItem(SESSION_KEY) === 'true';
+  // Cek localStorage agar session bertahan lintas tab
+  return localStorage.getItem(SESSION_KEY) === 'true';
 }
 
 function login(user, pass) {
   const users = getUsers();
-  return users.some(u => u.username === user && u.password === pass);
+  const match = users.find(u => u.username === user && u.password === pass);
+  if (match) return match; // kembalikan objek user
+  return null;
 }
 
 function logout() {
-  sessionStorage.removeItem(SESSION_KEY);
-  sessionStorage.removeItem('maudy_current_user');
+  localStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem('maudy_current_user');
   showLogin();
 }
 
@@ -219,8 +222,14 @@ function showAdmin() {
   data = loadData();
   populateForms();
   updateDashboard();
+
+  // Tampilkan username yang sedang login
+  const currentUser = localStorage.getItem('maudy_current_user') || getUsers()[0].username;
+  const userBadge = document.getElementById('current-user-badge');
+  if (userBadge) userBadge.textContent = currentUser;
+
   // Restore tab terakhir (atau dashboard jika pertama kali)
-  const lastTab = sessionStorage.getItem(LAST_TAB_KEY) || 'dashboard';
+  const lastTab = localStorage.getItem(LAST_TAB_KEY) || 'dashboard';
   switchTab(lastTab);
 }
 
@@ -230,19 +239,24 @@ function showAdmin() {
 loginForm.addEventListener('submit', (e) => {
   e.preventDefault();
   loginError.classList.remove('show');
+  loginError.textContent = '';
+
   const user = document.getElementById('admin-user').value.trim();
   const pass = document.getElementById('admin-pass').value;
+
   if (!user || !pass) {
     loginError.textContent = 'Isi username dan password.';
     loginError.classList.add('show');
     return;
   }
-  if (login(user, pass)) {
-    sessionStorage.setItem(SESSION_KEY, 'true');
-    sessionStorage.setItem('maudy_current_user', user);
+
+  const matchedUser = login(user, pass);
+  if (matchedUser) {
+    localStorage.setItem(SESSION_KEY, 'true');
+    localStorage.setItem('maudy_current_user', matchedUser.username);
     showAdmin();
   } else {
-    loginError.textContent = 'Username atau password salah.';
+    loginError.textContent = '❌ Username atau password salah. Silakan coba lagi.';
     loginError.classList.add('show');
     document.getElementById('admin-pass').value = '';
     document.getElementById('admin-pass').focus();
@@ -301,7 +315,7 @@ function switchTab(tab) {
 navItems.forEach(item => {
   item.addEventListener('click', () => {
     const tab = item.dataset.tab;
-    sessionStorage.setItem(LAST_TAB_KEY, tab); // simpan tab aktif
+    localStorage.setItem(LAST_TAB_KEY, tab); // simpan tab aktif ke localStorage
     switchTab(tab);
     // Close sidebar on mobile
     if (window.innerWidth <= 768) closeSidebar();
@@ -797,7 +811,8 @@ document.getElementById('change-pass-btn').addEventListener('click', () => {
   }
   users[myIdx >= 0 ? myIdx : 0] = { ...me, username, password: newPass };
   saveUsers(users);
-  sessionStorage.setItem('maudy_current_user', username);
+  sessionStorage.setItem('maudy_current_user', username); // backward compat
+  localStorage.setItem('maudy_current_user', username);
   showSecStatus('success', `✅ Kredensial berhasil diubah! Username: ${username}`);
   document.getElementById('sec-user').value = '';
   document.getElementById('sec-pass-old').value = '';
