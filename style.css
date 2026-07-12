@@ -1147,18 +1147,24 @@ input, textarea, select {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.875rem 2rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: #333333;
   white-space: nowrap;
   transition: all var(--transition);
   min-width: 140px;
   text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
-.partner-logo:hover { border-color: var(--border-accent); color: var(--color-accent); transform: translateY(-2px); }
+.partner-logo:hover { 
+  border-color: var(--border-accent); 
+  color: var(--color-accent); 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
 
 /* Logo image dalam marquee */
 .partner-logo .partner-img {
@@ -1166,22 +1172,22 @@ input, textarea, select {
   height: 52px;
   object-fit: contain;
   display: block;
-  filter: brightness(0.85) grayscale(30%);
+  filter: grayscale(20%);
   transition: filter var(--transition);
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
 }
 .partner-logo:hover .partner-img {
-  filter: brightness(1) grayscale(0%);
+  filter: grayscale(0%);
 }
 
-/* Mode light: logo sedikit lebih gelap agar terlihat */
+/* Hapus override theme light karena background sudah statis terang */
 [data-theme="light"] .partner-logo .partner-img {
-  filter: brightness(0.9) grayscale(10%);
+  filter: grayscale(20%);
 }
 [data-theme="light"] .partner-logo:hover .partner-img {
-  filter: brightness(1) grayscale(0%);
+  filter: grayscale(0%);
 }
 
 
