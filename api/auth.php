@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $action = $_GET['action'] ?? '';
-$usersFile = 'users.json';
+$usersFile = '../data/users.json';
 
 // Initialize users.json if it doesn't exist
 function get_users() {

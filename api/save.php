@@ -24,7 +24,7 @@ if (!$data) {
     exit();
 }
 
-$file = 'data.json';
+$file = '../data/data.json';
 if (file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT))) {
     echo json_encode(['success' => true, 'message' => 'Data saved successfully']);
 } else {

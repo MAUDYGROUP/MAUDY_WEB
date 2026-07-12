@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
-$file = 'data.json';
+$file = '../data/data.json';
 if (file_exists($file)) {
     echo file_get_contents($file);
 } else {
