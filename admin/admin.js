@@ -35,6 +35,7 @@ const DEFAULT_DATA = {
     desc_id:        'Solusi IT terlengkap untuk mendukung pertumbuhan bisnis Anda. Dari service komputer, instalasi jaringan, pengembangan software hingga keamanan sistem — semua ada di sini.',
     desc_en:        'The most comprehensive IT solutions to support your business growth. From computer service, network installation, software development to system security — all here.',
     footer_desc_id: 'Mitra teknologi terpercaya untuk mendukung transformasi digital bisnis Anda.',
+    partner_bg:     'rgba(255, 255, 255, 0.6)',
   },
   social: {
     facebook:  '#',
@@ -371,6 +372,7 @@ function populateForms() {
   setVal('co-desc-id',        co.desc_id);
   setVal('co-desc-en',        co.desc_en);
   setVal('co-footer-desc-id', co.footer_desc_id);
+  setVal('company-partner-bg', co.partner_bg);
 
   // Social
   const sm = data.social;
@@ -776,6 +778,7 @@ function collectFormData() {
     desc_id:        getVal('co-desc-id'),
     desc_en:        getVal('co-desc-en'),
     footer_desc_id: getVal('co-footer-desc-id'),
+    partner_bg:     getVal('company-partner-bg') || 'rgba(255, 255, 255, 0.6)',
   };
 
   // Social

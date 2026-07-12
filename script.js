@@ -160,8 +160,14 @@
     if (sm.linkedin  && sm.linkedin  !== '#') setHref('[aria-label*="LinkedIn"]', sm.linkedin);
     if (sm.tiktok    && sm.tiktok    !== '#' && sm.tiktok) setHref('[aria-label*="TikTok"]', sm.tiktok);
   }
+  // ---- 5. CUSTOM PARTNER BACKGROUND ----
+  if (cms.company && cms.company.partner_bg) {
+    const style = document.createElement('style');
+    style.textContent = `.partner-logo { background: ${cms.company.partner_bg} !important; }`;
+    document.head.appendChild(style);
+  }
 
-  // ---- 5. PARTNERS MARQUEE ----
+  // ---- 6. PARTNERS MARQUEE ----
   if (cms.partners && cms.partners.length > 0) {
     const track = document.querySelector('.marquee-track');
     if (track) {
