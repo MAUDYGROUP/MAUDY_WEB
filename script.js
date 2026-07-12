@@ -198,9 +198,17 @@
   window._CMS_DATA = cms;
   
   // Re-initialize components that depend on CMS data now that the data is loaded
-  if (typeof initTestimonials === 'function') initTestimonials();
-  if (typeof initCertifications === 'function') initCertifications();
-  if (typeof initPortfolioFilter === 'function') initPortfolioFilter();
+  const initCMSComponents = () => {
+    if (typeof initTestimonials === 'function') initTestimonials();
+    if (typeof initCertifications === 'function') initCertifications();
+    if (typeof initPortfolioFilter === 'function') initPortfolioFilter();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCMSComponents);
+  } else {
+    initCMSComponents();
+  }
 })();
 
 
@@ -452,9 +460,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollAnimations();
   initParticles();
   initCounters();
-  initTestimonials();
-  initCertifications();
-  initPortfolioFilter();
   initContactForm();
   initActiveNavLinks();
 });
@@ -911,14 +916,14 @@ function closeLightbox() {
 /* ============================================================
    13. PORTFOLIO FILTER
    ============================================================ */
-function renderPortfolioMarquee(filter = 'all') {
+function renderPortfolioMarquee(filter) {
   const container = document.getElementById('portfolio-grid');
   if (!container) return;
 
   const cms = window._CMS_DATA || {};
   let projects = cms.docProjects || [];
-
-  // Ambil hanya foto yang ditandai 'unggulan'
+  
+  // Filter yang ditandai sebagai unggulan
   let featuredPhotos = [];
   projects.forEach(p => {
     if (p.photos) {
@@ -935,6 +940,7 @@ function renderPortfolioMarquee(filter = 'all') {
       });
     }
   });
+
   // Jika tidak ada sama sekali yang ditandai sebagai unggulan, gunakan semua foto sebagai fallback
   if (featuredPhotos.length === 0) {
     projects.forEach(p => {
@@ -949,28 +955,6 @@ function renderPortfolioMarquee(filter = 'all') {
           });
         });
       }
-    });
-  }
-  // Kumpulkan kategori unik untuk filter
-  const categories = [...new Set(featuredPhotos.map(f => f.category))];
-  
-  // Render Filter Buttons (hanya dijalankan sekali saat inisialisasi)
-  const filterContainer = document.getElementById('portfolio-filter');
-  if (filterContainer && !filterContainer.dataset.initialized) {
-    let filterHTML = `<button class="filter-btn active" data-filter="all">Semua</button>`;
-    categories.forEach(cat => {
-      filterHTML += `<button class="filter-btn" data-filter="${cat}">${cat}</button>`;
-    });
-    filterContainer.innerHTML = filterHTML;
-    filterContainer.dataset.initialized = "true";
-
-    // Re-attach event listeners
-    filterContainer.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        filterContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderPortfolioMarquee(btn.dataset.filter);
-      });
     });
   }
 
@@ -1001,6 +985,53 @@ function renderPortfolioMarquee(filter = 'all') {
 }
 
 function initPortfolioFilter() {
+  const cms = window._CMS_DATA || {};
+  let projects = cms.docProjects || [];
+  
+  let featuredPhotos = [];
+  projects.forEach(p => {
+    if (p.photos) {
+      p.photos.forEach(ph => {
+        if (ph.featured) {
+          featuredPhotos.push({
+            category: p.category || 'Lainnya'
+          });
+        }
+      });
+    }
+  });
+
+  if (featuredPhotos.length === 0) {
+    projects.forEach(p => {
+      if (p.photos) {
+        p.photos.forEach(ph => {
+          featuredPhotos.push({
+            category: p.category || 'Lainnya'
+          });
+        });
+      }
+    });
+  }
+
+  const categories = [...new Set(featuredPhotos.map(f => f.category))];
+  const filterContainer = document.getElementById('portfolio-filter');
+  
+  if (filterContainer) {
+    let filterHTML = `<button class="filter-btn active" data-filter="all">Semua</button>`;
+    categories.forEach(cat => {
+      filterHTML += `<button class="filter-btn" data-filter="${cat}">${cat}</button>`;
+    });
+    filterContainer.innerHTML = filterHTML;
+
+    filterContainer.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderPortfolioMarquee(btn.dataset.filter);
+      });
+    });
+  }
+
   renderPortfolioMarquee('all');
 }
 
