@@ -13,12 +13,13 @@ services:
       - "80"
     environment:
       - TZ=Asia/Jakarta
+    volumes:
+      - ./:/var/www/html/
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 30s
-      timeout: 5s
+      timeout: 10s
       retries: 3
-      start_period: 10s
 
 networks:
   default:

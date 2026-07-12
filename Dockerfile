@@ -1,38 +1,15 @@
-# ============================================================
-# MAUDY IT Solution — Dockerfile
-# Base: nginx:alpine (sangat ringan ~25MB)
-# ============================================================
+FROM php:8.2-apache
 
-FROM nginx:alpine
+# Enable Apache modules
+RUN a2enmod rewrite expires headers
 
-# Label metadata
-LABEL maintainer="MAUDY IT Solution <info@maudyitsolution.com>"
-LABEL description="MAUDY IT Solution Website — Static Site with Nginx"
-LABEL version="1.0.0"
+# Copy all files to the Apache document root
+COPY . /var/www/html/
 
-# Hapus default nginx config dan files
-RUN rm -rf /usr/share/nginx/html/*
+# Make sure permissions are correct for API to save files
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# Copy semua file website ke nginx html directory
-COPY . /usr/share/nginx/html/
-
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Hapus file yang tidak perlu di container
-RUN rm -f /usr/share/nginx/html/Dockerfile \
-          /usr/share/nginx/html/docker-compose.yml \
-          /usr/share/nginx/html/nginx.conf \
-          /usr/share/nginx/html/.gitignore \
-          /usr/share/nginx/html/README.md \
-          /usr/share/nginx/html/implementation_plan.md
-
-# Port expose
 EXPOSE 80
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD wget -qO- http://localhost/ || exit 1
-
-# Jalankan nginx di foreground
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["apache2-foreground"]
