@@ -8,6 +8,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
+session_start();
+if (!isset($_SESSION['admin_user'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit();
+}
+
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 

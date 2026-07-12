@@ -1,0 +1,4 @@
+api/data.json
+api/users.json
+assets/uploads/*
+!assets/uploads/.gitkeep

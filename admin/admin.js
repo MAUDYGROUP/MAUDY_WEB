@@ -94,62 +94,39 @@ const DEFAULT_DATA = {
 // ============================================================
 // AUTH MANAGEMENT — MULTI USER
 // ============================================================
-const USERS_KEY = 'maudy_admin_users';  // array of { username, password, role }
-
-/** Ambil semua user. Default: 1 admin jika kosong. */
-function getUsers() {
+async function isLoggedIn() {
   try {
-    const raw = localStorage.getItem(USERS_KEY);
-    if (raw) {
-      const arr = JSON.parse(raw);
-      if (Array.isArray(arr) && arr.length > 0) return arr;
-    }
-  } catch (_) {}
-  // Migrasi dari sistem lama (single user di AUTH_KEY)
+    const res = await fetch('../api/auth.php?action=check', { credentials: 'same-origin' });
+    const data = await res.json();
+    return data.logged_in;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function login(user, pass) {
   try {
-    const legacy = localStorage.getItem(AUTH_KEY);
-    if (legacy) {
-      const old = JSON.parse(legacy);
-      if (old.username && old.password) {
-        const users = [{ username: old.username, password: old.password, role: 'admin' }];
-        localStorage.setItem(USERS_KEY, JSON.stringify(users));
-        return users;
-      }
+    const res = await fetch('../api/auth.php?action=login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: user, password: pass }),
+      credentials: 'same-origin'
+    });
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem('maudy_current_user', data.username);
+      return data;
     }
-  } catch (_) {}
-  // Default
-  return [{ username: 'admin', password: 'maudy2025', role: 'admin' }];
+    return null;
+  } catch (e) {
+    return null;
+  }
 }
 
-function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-
-/** Backward-compat helpers */
-function getCredentials() {
-  const users = getUsers();
-  return users[0]; // credential aktif = user pertama (admin utama)
-}
-function saveCredentials(username, password) {
-  // Jangan pakai ini lagi — gunakan saveUsers()
-  const users = getUsers();
-  users[0] = { ...users[0], username, password };
-  saveUsers(users);
-}
-
-function isLoggedIn() {
-  // Cek localStorage agar session bertahan lintas tab
-  return localStorage.getItem(SESSION_KEY) === 'true';
-}
-
-function login(user, pass) {
-  const users = getUsers();
-  const match = users.find(u => u.username === user && u.password === pass);
-  if (match) return match; // kembalikan objek user
-  return null;
-}
-
-function logout() {
+async function logout() {
+  try {
+    await fetch('../api/auth.php?action=logout', { method: 'POST', credentials: 'same-origin' });
+  } catch (e) {}
   localStorage.removeItem(SESSION_KEY);
   localStorage.removeItem('maudy_current_user');
   showLogin();
@@ -245,7 +222,7 @@ async function showAdmin() {
   updateDashboard();
 
   // Tampilkan username yang sedang login
-  const currentUser = localStorage.getItem('maudy_current_user') || getUsers()[0].username;
+  const currentUser = localStorage.getItem('maudy_current_user');
   const userBadge = document.getElementById('current-user-badge');
   if (userBadge) userBadge.textContent = currentUser;
 
@@ -257,7 +234,7 @@ async function showAdmin() {
 // ============================================================
 // LOGIN LOGIC
 // ============================================================
-loginForm.addEventListener('submit', (e) => {
+loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   loginError.classList.remove('show');
   loginError.textContent = '';
@@ -271,10 +248,9 @@ loginForm.addEventListener('submit', (e) => {
     return;
   }
 
-  const matchedUser = login(user, pass);
+  const matchedUser = await login(user, pass);
   if (matchedUser) {
-    localStorage.setItem(SESSION_KEY, 'true');
-    localStorage.setItem('maudy_current_user', matchedUser.username);
+    localStorage.setItem(SESSION_KEY, 'true'); // still keep this so logic doesn't break, though it's less necessary now
     showAdmin();
   } else {
     loginError.textContent = '❌ Username atau password salah. Silakan coba lagi.';
@@ -318,7 +294,7 @@ const TAB_TITLES = {
 };
 
 // ===== Helper: pindah tab =====
-function switchTab(tab) {
+async function switchTab(tab) {
   const targetPanel = document.getElementById(`tab-${tab}`);
   if (!targetPanel) return; // tab tidak ada, abaikan
   navItems.forEach(n => { n.classList.remove('active'); n.removeAttribute('aria-current'); });
@@ -820,42 +796,40 @@ function getVal(id) {
 // ============================================================
 // SECURITY — CHANGE PASSWORD (Admin Utama)
 // ============================================================
-document.getElementById('change-pass-btn').addEventListener('click', () => {
+document.getElementById('change-pass-btn').addEventListener('click', async () => {
   const secStatus = document.getElementById('sec-status');
   secStatus.className = 'form-status';
   secStatus.style.display = 'none';
 
-  const newUser    = document.getElementById('sec-user').value.trim();
   const oldPass    = document.getElementById('sec-pass-old').value;
   const newPass    = document.getElementById('sec-pass-new').value;
   const confirmPass= document.getElementById('sec-pass-confirm').value;
-
-  const currentUser = sessionStorage.getItem('maudy_current_user') || getUsers()[0].username;
-  const users = getUsers();
-  const myIdx = users.findIndex(u => u.username === currentUser);
-  const me    = myIdx >= 0 ? users[myIdx] : users[0];
+  
+  const currentUser = localStorage.getItem('maudy_current_user');
 
   if (!oldPass) { showSecStatus('error', 'Masukkan password lama.'); return; }
-  if (oldPass !== me.password) { showSecStatus('error', 'Password lama salah.'); return; }
   if (newPass.length < 6) { showSecStatus('error', 'Password baru minimal 6 karakter.'); return; }
   if (newPass !== confirmPass) { showSecStatus('error', 'Konfirmasi password tidak cocok.'); return; }
 
-  const username = newUser || me.username;
-  // Cek duplikat username (kecuali diri sendiri)
-  if (username !== me.username && users.some(u => u.username === username)) {
-    showSecStatus('error', `Username "${username}" sudah digunakan.`); return;
+  try {
+    const res = await fetch('../api/auth.php?action=change_password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: currentUser, oldPassword: oldPass, newPassword: newPass }),
+      credentials: 'same-origin'
+    });
+    const data = await res.json();
+    if (data.success) {
+      showSecStatus('success', `✅ Password berhasil diubah!`);
+      document.getElementById('sec-pass-old').value = '';
+      document.getElementById('sec-pass-new').value = '';
+      document.getElementById('sec-pass-confirm').value = '';
+      renderUserList();
+    } else {
+      showSecStatus('error', data.message || 'Gagal mengubah password');
+    }
+  } catch (e) {
+    showSecStatus('error', 'Terjadi kesalahan jaringan.');
   }
-  users[myIdx >= 0 ? myIdx : 0] = { ...me, username, password: newPass };
-  saveUsers(users);
-  sessionStorage.setItem('maudy_current_user', username); // backward compat
-  localStorage.setItem('maudy_current_user', username);
-  showSecStatus('success', `✅ Kredensial berhasil diubah! Username: ${username}`);
-  document.getElementById('sec-user').value = '';
-  document.getElementById('sec-pass-old').value = '';
-  document.getElementById('sec-pass-new').value = '';
-  document.getElementById('sec-pass-confirm').value = '';
-  // Refresh user list jika sedang di tab users
-  renderUserList();
 });
 
 function showSecStatus(type, msg) {
@@ -1111,7 +1085,7 @@ function escapeHtml(str = '') {
 // INIT
 // ============================================================
 async function init() {
-  if (isLoggedIn()) {
+  if (await isLoggedIn()) {
     await showAdmin();
   } else {
     showLogin();
