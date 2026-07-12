@@ -524,7 +524,9 @@ function createPartnerRow(partner, idx) {
 
   /* ---- Event: hapus partner ---- */
   row.querySelector('.btn-remove').addEventListener('click', () => {
-    data.partners.splice(idx, 1);
+    syncPartnersFromDOM();
+    const currentIdx = parseInt(row.dataset.idx);
+    data.partners.splice(currentIdx, 1);
     renderPartners();
   });
 
@@ -568,7 +570,7 @@ function createPartnerRow(partner, idx) {
         rmLogo.title = 'Hapus Logo';
         rmLogo.textContent = '✕';
         row.querySelector('.partner-logo-upload').appendChild(rmLogo);
-        rmLogo.addEventListener('click', () => removeLogo(row, idx));
+        rmLogo.addEventListener('click', () => removeLogo(row));
       }
       showToast('✅ Logo berhasil diupload dan dikonversi (WebP)', 'success');
       syncPartnersFromDOM(); // ensure order stays correct
@@ -582,7 +584,7 @@ function createPartnerRow(partner, idx) {
 
   /* ---- Event: hapus logo ---- */
   const rmLogoBtn = row.querySelector('.btn-remove-logo');
-  if (rmLogoBtn) rmLogoBtn.addEventListener('click', () => removeLogo(row, idx));
+  if (rmLogoBtn) rmLogoBtn.addEventListener('click', () => removeLogo(row));
 
   /* ---- Drag: input tidak ikut trigger drag ---- */
   const handle = row.querySelector('.drag-handle');
@@ -595,8 +597,7 @@ function createPartnerRow(partner, idx) {
   return row;
 }
 
-function removeLogo(row, idx) {
-  if (data.partners[idx]) data.partners[idx].logo = null;
+function removeLogo(row) {
   row.dataset.logo = '';
   const preview = row.querySelector('.partner-logo-preview');
   preview.innerHTML = `<span class="partner-logo-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>`;
@@ -661,6 +662,7 @@ function syncPartnersFromDOM() {
 }
 
 document.getElementById('add-partner-btn').addEventListener('click', () => {
+  syncPartnersFromDOM();
   data.partners.push({ name: '', logo: null });
   renderPartners();
   const inputs = document.querySelectorAll('#partners-list .partner-name-input');
@@ -792,7 +794,9 @@ function collectFormData() {
     tiktok:    getVal('sm-tiktok').trim(),
   };
 
-  // Partners — already in data.partners (live-updated)
+  // Partners
+  syncPartnersFromDOM();
+
   // Testimonials — already in data.testimonials (live-updated)
 }
 
