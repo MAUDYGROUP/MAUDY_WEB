@@ -480,6 +480,7 @@ function createPartnerRow(partner, idx) {
   const row = document.createElement('div');
   row.className = 'partner-row partner-row-v2';
   row.dataset.idx = idx;
+  row.dataset.logo = logo || '';
   row.draggable = true;
 
   // Buat file input (tersembunyi)
@@ -499,7 +500,7 @@ function createPartnerRow(partner, idx) {
     <div class="partner-logo-upload">
       <div class="partner-logo-preview" title="Klik untuk upload logo">
         ${logo
-          ? `<img src="${logo}" alt="Logo ${escapeHtml(name)}" draggable="false" data-no-protect="true" />`
+          ? `<img src="${logo.startsWith('../') ? logo : '../' + logo}" alt="Logo ${escapeHtml(name)}" draggable="false" data-no-protect="true" />`
           : `<span class="partner-logo-placeholder">
                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
              </span>`
@@ -553,6 +554,7 @@ function createPartnerRow(partner, idx) {
       if (!json.success) throw new Error(json.message);
 
       if (data.partners[idx]) data.partners[idx].logo = json.url;
+      row.dataset.logo = json.url;
       // Update preview
       const preview = row.querySelector('.partner-logo-preview');
       preview.innerHTML = `<img src="../${json.url}" alt="Logo" draggable="false" data-no-protect="true" />`;
@@ -567,6 +569,7 @@ function createPartnerRow(partner, idx) {
         rmLogo.addEventListener('click', () => removeLogo(row, idx));
       }
       showToast('✅ Logo berhasil diupload dan dikonversi (WebP)', 'success');
+      syncPartnersFromDOM(); // ensure order stays correct
     } catch (err) {
       showToast('❌ Gagal upload gambar: ' + err, 'error');
     } finally {
@@ -592,10 +595,12 @@ function createPartnerRow(partner, idx) {
 
 function removeLogo(row, idx) {
   if (data.partners[idx]) data.partners[idx].logo = null;
+  row.dataset.logo = '';
   const preview = row.querySelector('.partner-logo-preview');
   preview.innerHTML = `<span class="partner-logo-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>`;
   const rmBtn = row.querySelector('.btn-remove-logo');
   if (rmBtn) rmBtn.remove();
+  syncPartnersFromDOM();
 }
 
 function initPartnerDragDrop() {
@@ -645,12 +650,10 @@ function syncPartnersFromDOM() {
   data.partners = Array.from(list.querySelectorAll('.partner-row')).map((row, i) => {
     row.dataset.idx = i;
     const nameEl = row.querySelector('.partner-name-input');
-    const imgEl  = row.querySelector('.partner-logo-preview img');
     if (nameEl) nameEl.setAttribute('aria-label', `Nama partner ${i + 1}`);
-    const idx = parseInt(row.dataset.idx);
     return {
       name: nameEl ? nameEl.value : '',
-      logo: imgEl  ? imgEl.src   : (data.partners[idx] ? data.partners[idx].logo : null),
+      logo: row.dataset.logo || null,
     };
   });
 }
