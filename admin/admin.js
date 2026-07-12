@@ -151,6 +151,7 @@ async function loadData() {
 async function saveData(dataObj) {
   try {
     const res = await fetch('../api/save.php', {
+      credentials: 'same-origin',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dataObj)
@@ -543,6 +544,7 @@ function createPartnerRow(partner, idx) {
     try {
       const webp = await fileToWebP(file, 200, 100, 0.80);
       const res = await fetch('../api/upload.php', {
+        credentials: 'same-origin',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: webp })
@@ -1186,6 +1188,7 @@ function createCertRow(cert, idx) {
     try {
       const webp = await fileToWebP(file, 600, 420, 0.85);
       const res = await fetch('../api/upload.php', {
+        credentials: 'same-origin',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: webp })
@@ -1446,6 +1449,7 @@ document.getElementById('doc-photo-input')?.addEventListener('change', async e =
     try {
       const webp = await photoToWebP(files[i]);
       const res = await fetch('../api/upload.php', {
+        credentials: 'same-origin',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: webp })
