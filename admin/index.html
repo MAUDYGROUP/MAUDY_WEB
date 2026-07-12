@@ -162,6 +162,14 @@
           </svg>
           Sertifikat
         </button>
+        <button class="nav-item" data-tab="dokumentasi">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          Dokumentasi
+        </button>
         <button class="nav-item" data-tab="watermark">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -547,6 +555,104 @@
               </button>
             </div>
             <div id="cert-list" class="cert-admin-list"></div>
+          </div>
+        </section>
+
+        <!-- ===== DOKUMENTASI PROYEK ===== -->
+        <section id="tab-dokumentasi" class="tab-panel">
+          <div class="page-header">
+            <h2>📸 Dokumentasi Proyek</h2>
+            <p>Kelola galeri foto dokumentasi per proyek. Foto akan dikompres ke WebP agar ringan.</p>
+          </div>
+
+          <!-- Toolbar -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem">
+            <div style="display:flex;gap:.5rem;align-items:center">
+              <button id="add-doc-project-btn" class="btn-save" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Tambah Proyek Baru
+              </button>
+              <a href="../dokumentasi.html" target="_blank" class="btn-view-doc" id="btn-view-doc">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Lihat Halaman
+              </a>
+            </div>
+            <span class="doc-admin-count" id="doc-admin-count"></span>
+          </div>
+
+          <!-- Project list -->
+          <div id="doc-project-list" class="doc-project-list"></div>
+
+          <!-- Form tambah/edit proyek (hidden by default) -->
+          <div id="doc-project-form" class="doc-project-form-wrap" hidden>
+            <div class="card-form">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+                <h3 id="doc-form-title" style="font-size:1rem;font-weight:700;color:var(--accent)">Proyek Baru</h3>
+                <button id="doc-form-cancel" type="button" class="btn-secondary">✕ Batal</button>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Nama Proyek <span style="color:var(--danger)">*</span></label>
+                  <input type="text" id="doc-proj-title" placeholder="Contoh: Instalasi Jaringan Kantor PT XYZ" />
+                </div>
+                <div class="form-group">
+                  <label>Klien / Pelanggan</label>
+                  <input type="text" id="doc-proj-client" placeholder="Nama klien atau perusahaan" />
+                </div>
+                <div class="form-group">
+                  <label>Kategori</label>
+                  <input type="text" id="doc-proj-category" placeholder="Mis: Networking, CCTV, Server" list="doc-cat-list" />
+                  <datalist id="doc-cat-list">
+                    <option value="Networking">
+                    <option value="CCTV">
+                    <option value="Server">
+                    <option value="Cloud">
+                    <option value="Wireless">
+                    <option value="Fiber Optik">
+                    <option value="Maintenance">
+                  </datalist>
+                </div>
+                <div class="form-group">
+                  <label>Tanggal / Bulan</label>
+                  <input type="month" id="doc-proj-date" />
+                </div>
+              </div>
+              <div class="form-group" style="margin-top:.75rem">
+                <label>Deskripsi Singkat</label>
+                <textarea id="doc-proj-desc" rows="2" placeholder="Ringkasan pekerjaan yang dilakukan..."></textarea>
+              </div>
+
+              <!-- Upload foto -->
+              <div style="margin-top:1.25rem">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+                  <label style="font-size:.88rem;font-weight:600;color:var(--text2)">
+                    📷 Foto Dokumentasi
+                    <span style="font-size:.75rem;color:var(--text3);font-weight:400;margin-left:.4rem">
+                      (otomatis konversi ke WebP 1280×960px, maks 250KB/foto)
+                    </span>
+                  </label>
+                  <label class="btn-upload-doc-photos" for="doc-photo-input" id="btn-upload-doc-photos">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload Foto
+                  </label>
+                  <input type="file" id="doc-photo-input" accept="image/*" multiple style="display:none" />
+                </div>
+                <div id="doc-photos-preview" class="doc-photos-preview"></div>
+                <div id="doc-upload-progress" class="doc-upload-progress" hidden>
+                  <div class="doc-progress-bar"><div id="doc-progress-fill" class="doc-progress-fill"></div></div>
+                  <span id="doc-progress-text">Mengkonversi...</span>
+                </div>
+              </div>
+
+              <div id="doc-form-status" class="form-status" style="display:none;margin-top:.75rem"></div>
+              <div style="display:flex;gap:.75rem;margin-top:1.25rem">
+                <button id="doc-form-save" class="btn-save" type="button">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  Simpan Proyek
+                </button>
+                <button id="doc-form-cancel2" type="button" class="btn-secondary">Batal</button>
+              </div>
+            </div>
           </div>
         </section>
 

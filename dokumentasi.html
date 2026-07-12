@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dokumentasi Proyek — MAUDY IT Solution</title>
+  <meta name="description" content="Galeri foto dokumentasi proyek dan pekerjaan lapangan MAUDY IT Solution — instalasi jaringan, CCTV, server, dan infrastruktur IT." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dokumentasi.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="doc-nav" id="doc-nav">
+    <div class="doc-nav-inner">
+      <a href="index.html" class="doc-logo">
+        <svg width="32" height="32" viewBox="0 0 34 34" fill="none">
+          <rect width="34" height="34" rx="10" fill="url(#ng1)"/>
+          <text x="17" y="24" text-anchor="middle" font-size="18" font-family="Outfit,sans-serif" font-weight="800" fill="white">M</text>
+          <defs><linearGradient id="ng1" x1="0" y1="0" x2="34" y2="34"><stop stop-color="#2563EB"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
+        </svg>
+        <span>MAUDY <strong>IT Solution</strong></span>
+      </a>
+      <a href="index.html" class="doc-back-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Kembali ke Beranda
+      </a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="doc-hero">
+    <div class="doc-container">
+      <span class="doc-badge">PORTOFOLIO LAPANGAN</span>
+      <h1 class="doc-hero-title">Dokumentasi <span class="doc-gradient">Proyek</span></h1>
+      <p class="doc-hero-desc">Galeri foto hasil pekerjaan dan instalasi yang telah kami kerjakan. Bukti nyata kualitas dan profesionalisme tim kami di lapangan.</p>
+    </div>
+  </header>
+
+  <!-- FILTER BAR -->
+  <div class="doc-filter-bar">
+    <div class="doc-container">
+      <div class="doc-filter-scroll" id="doc-filters">
+        <button class="doc-filter-btn active" data-filter="all">Semua Proyek</button>
+      </div>
+      <span class="doc-count" id="doc-count"></span>
+    </div>
+  </div>
+
+  <!-- PROJECT GRID -->
+  <main class="doc-main">
+    <div class="doc-container">
+      <div class="doc-grid" id="doc-grid"></div>
+      <div class="doc-empty" id="doc-empty" hidden>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".25"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p>Belum ada dokumentasi proyek yang tersedia.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- LIGHTBOX -->
+  <div id="doc-lightbox" class="doc-lightbox" hidden role="dialog" aria-modal="true">
+    <div class="doc-lb-backdrop" id="doc-lb-backdrop"></div>
+    <div class="doc-lb-content">
+      <button class="doc-lb-close" id="doc-lb-close" aria-label="Tutup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="doc-lb-header">
+        <div class="doc-lb-header-info">
+          <span class="doc-lb-category" id="doc-lb-cat"></span>
+          <h2 class="doc-lb-title" id="doc-lb-title"></h2>
+          <p class="doc-lb-meta" id="doc-lb-meta"></p>
+        </div>
+        <span class="doc-lb-counter" id="doc-lb-counter"></span>
+      </div>
+      <div class="doc-lb-stage">
+        <button class="doc-lb-nav doc-lb-prev" id="doc-lb-prev" aria-label="Sebelumnya">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="doc-lb-img-wrap">
+          <img id="doc-lb-img" src="" alt="" draggable="false" loading="eager" />
+          <p class="doc-lb-caption" id="doc-lb-caption"></p>
+        </div>
+        <button class="doc-lb-nav doc-lb-next" id="doc-lb-next" aria-label="Berikutnya">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+      <div class="doc-lb-thumbs" id="doc-lb-thumbs"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="doc-footer">
+    <div class="doc-container">
+      <p>© <span id="doc-year"></span> MAUDY IT Solution &nbsp;·&nbsp; <a href="index.html">Kembali ke Beranda</a></p>
+    </div>
+  </footer>
+
+  <script src="dokumentasi.js"></script>
+</body>
+</html>

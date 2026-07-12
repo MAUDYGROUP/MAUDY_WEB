@@ -277,6 +277,7 @@ const TAB_TITLES = {
   partners:     'Partner & Rekanan',
   testimonials: 'Testimoni',
   certificates: 'Sertifikat',
+  dokumentasi:  'Dokumentasi Proyek',
   users:        'Manajemen User',
   security:     'Keamanan',
 };
@@ -294,6 +295,7 @@ function switchTab(tab) {
   // Trigger event khusus jika tab memerlukan render
   if (tab === 'users')        renderUserList();
   if (tab === 'certificates') renderCertificates();
+  if (tab === 'dokumentasi')  renderDocList();
 }
 
 navItems.forEach(item => {
@@ -1203,6 +1205,281 @@ document.getElementById('add-cert-btn')?.addEventListener('click', () => {
   const rows = document.querySelectorAll('#cert-list .cert-admin-row');
   if (rows.length) rows[rows.length - 1].querySelector('.cert-title-input')?.focus();
 });
+
+});
+
+// ============================================================
+// DOKUMENTASI PROYEK — ADMIN
+// ============================================================
+const DOC_KEY = 'maudy_dokumentasi';
+
+function loadDocProjects() {
+  try {
+    const raw = localStorage.getItem(DOC_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (_) { return []; }
+}
+
+function saveDocProjects(projects) {
+  localStorage.setItem(DOC_KEY, JSON.stringify(projects));
+}
+
+function genDocId() {
+  return 'proj_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+}
+
+// ---- State form ----
+let docProjects = [];
+let docEditIdx  = -1;      // -1 = tambah baru, >= 0 = edit
+let docFormPhotos = [];    // array { image: dataURL, caption: '' }
+
+// ---- Render daftar proyek ----
+function renderDocList() {
+  docProjects = loadDocProjects();
+  const list  = document.getElementById('doc-project-list');
+  const count = document.getElementById('doc-admin-count');
+  if (!list) return;
+
+  count.textContent = `${docProjects.length} proyek`;
+
+  if (docProjects.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:3rem 0;color:var(--text3)">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3" style="margin-bottom:.75rem"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <p style="font-size:.9rem">Belum ada proyek. Klik <strong>Tambah Proyek Baru</strong> untuk mulai.</p>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = docProjects.map((p, idx) => {
+    const thumb = p.photos?.[0]?.image || '';
+    const photoCount = (p.photos || []).length;
+    return `
+    <div class="doc-admin-proj-row" data-idx="${idx}">
+      <div class="doc-admin-proj-thumb">
+        ${thumb
+          ? `<img src="${thumb}" alt="${escapeHtml(p.title||'')}" draggable="false" loading="lazy" />`
+          : `<div class="doc-admin-no-thumb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}
+      </div>
+      <div class="doc-admin-proj-info">
+        <div class="doc-admin-proj-title">${escapeHtml(p.title || 'Tanpa Judul')}</div>
+        <div class="doc-admin-proj-meta">
+          ${p.category ? `<span class="doc-admin-cat">${escapeHtml(p.category)}</span>` : ''}
+          ${p.client   ? `<span>${escapeHtml(p.client)}</span>` : ''}
+          ${p.date     ? `<span>${escapeHtml(p.date)}</span>`   : ''}
+          <span>${photoCount} foto</span>
+        </div>
+      </div>
+      <div class="doc-admin-proj-actions">
+        <button class="btn-edit-user doc-edit-btn" data-idx="${idx}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit
+        </button>
+        <button class="btn-remove doc-del-btn" data-idx="${idx}" title="Hapus Proyek">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Events
+  list.querySelectorAll('.doc-edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => openDocForm(parseInt(btn.dataset.idx)));
+  });
+  list.querySelectorAll('.doc-del-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      if (!confirm(`Hapus proyek "${docProjects[idx]?.title || ''}"? Semua foto akan hilang.`)) return;
+      docProjects.splice(idx, 1);
+      saveDocProjects(docProjects);
+      renderDocList();
+      showToast('✅ Proyek dihapus.', 'success');
+    });
+  });
+}
+
+// ---- Buka form ----
+function openDocForm(editIdx = -1) {
+  docEditIdx    = editIdx;
+  docFormPhotos = [];
+
+  const formWrap = document.getElementById('doc-project-form');
+  const title    = document.getElementById('doc-form-title');
+  formWrap.removeAttribute('hidden');
+  formWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  if (editIdx >= 0) {
+    const p = docProjects[editIdx];
+    title.textContent = `Edit Proyek — ${p.title || ''}`;
+    document.getElementById('doc-proj-title').value    = p.title       || '';
+    document.getElementById('doc-proj-client').value   = p.client      || '';
+    document.getElementById('doc-proj-category').value = p.category    || '';
+    document.getElementById('doc-proj-date').value     = p.date        || '';
+    document.getElementById('doc-proj-desc').value     = p.description || '';
+    docFormPhotos = JSON.parse(JSON.stringify(p.photos || []));
+  } else {
+    title.textContent = 'Proyek Baru';
+    document.getElementById('doc-proj-title').value    = '';
+    document.getElementById('doc-proj-client').value   = '';
+    document.getElementById('doc-proj-category').value = '';
+    document.getElementById('doc-proj-date').value     = '';
+    document.getElementById('doc-proj-desc').value     = '';
+  }
+
+  document.getElementById('doc-form-status').style.display = 'none';
+  renderDocPhotosPreview();
+  document.getElementById('doc-proj-title').focus();
+}
+
+function closeDocForm() {
+  document.getElementById('doc-project-form').setAttribute('hidden', '');
+  docEditIdx    = -1;
+  docFormPhotos = [];
+}
+
+// ---- Preview foto ----
+function renderDocPhotosPreview() {
+  const preview = document.getElementById('doc-photos-preview');
+  if (!preview) return;
+  if (docFormPhotos.length === 0) {
+    preview.innerHTML = `<div class="doc-photos-empty">Belum ada foto. Klik <strong>Upload Foto</strong> untuk menambahkan.</div>`;
+    return;
+  }
+  preview.innerHTML = docFormPhotos.map((ph, i) => `
+    <div class="doc-photo-thumb-wrap" data-i="${i}">
+      <img src="${ph.image}" alt="${escapeHtml(ph.caption||'')}" draggable="false" loading="lazy" />
+      <div class="doc-photo-caption-overlay">
+        <input class="doc-caption-input" type="text" value="${escapeHtml(ph.caption||'')}"
+               placeholder="Keterangan foto..." data-i="${i}" />
+      </div>
+      <button class="doc-photo-del" data-i="${i}" title="Hapus foto">✕</button>
+    </div>
+  `).join('');
+
+  // Caption edit
+  preview.querySelectorAll('.doc-caption-input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const i = parseInt(e.target.dataset.i);
+      if (docFormPhotos[i]) docFormPhotos[i].caption = e.target.value;
+    });
+    inp.addEventListener('mousedown', e => e.stopPropagation());
+  });
+
+  // Delete foto
+  preview.querySelectorAll('.doc-photo-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.i);
+      docFormPhotos.splice(i, 1);
+      renderDocPhotosPreview();
+    });
+  });
+}
+
+// ---- Upload & konversi foto ----
+function photoToWebP(file, maxW = 1280, maxH = 960, quality = 0.78) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) return reject('Bukan gambar');
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxW / img.naturalWidth, maxH / img.naturalHeight);
+        const w = Math.round(img.naturalWidth  * scale);
+        const h = Math.round(img.naturalHeight * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width  = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/webp', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('doc-photo-input')?.addEventListener('change', async e => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+
+  const progress     = document.getElementById('doc-upload-progress');
+  const progressFill = document.getElementById('doc-progress-fill');
+  const progressText = document.getElementById('doc-progress-text');
+  progress.removeAttribute('hidden');
+
+  for (let i = 0; i < files.length; i++) {
+    const pct = Math.round((i / files.length) * 100);
+    progressFill.style.width = pct + '%';
+    progressText.textContent = `Mengkonversi ${i + 1}/${files.length}...`;
+    try {
+      const webp = await photoToWebP(files[i]);
+      docFormPhotos.push({ image: webp, caption: '' });
+    } catch (err) {
+      showToast(`⚠️ Gagal konversi: ${files[i].name}`, 'error');
+    }
+  }
+
+  progressFill.style.width = '100%';
+  progressText.textContent = `✅ ${files.length} foto dikkonversi`;
+  setTimeout(() => { progress.setAttribute('hidden', ''); }, 1500);
+
+  renderDocPhotosPreview();
+  e.target.value = '';
+  showToast(`✅ ${files.length} foto ditambahkan & dikkonversi ke WebP.`, 'success');
+});
+
+// ---- Simpan proyek ----
+document.getElementById('doc-form-save')?.addEventListener('click', () => {
+  const title = document.getElementById('doc-proj-title').value.trim();
+  const statusEl = document.getElementById('doc-form-status');
+  statusEl.style.display = 'none';
+
+  if (!title) {
+    statusEl.className = 'form-status error';
+    statusEl.textContent = 'Nama proyek wajib diisi.';
+    statusEl.style.display = 'block';
+    document.getElementById('doc-proj-title').focus();
+    return;
+  }
+
+  const proj = {
+    id:          docEditIdx >= 0 ? docProjects[docEditIdx].id : genDocId(),
+    title,
+    client:      document.getElementById('doc-proj-client').value.trim(),
+    category:    document.getElementById('doc-proj-category').value.trim(),
+    date:        document.getElementById('doc-proj-date').value,
+    description: document.getElementById('doc-proj-desc').value.trim(),
+    photos:      docFormPhotos,
+    published:   true,
+    updatedAt:   new Date().toISOString(),
+  };
+
+  if (docEditIdx >= 0) {
+    docProjects[docEditIdx] = proj;
+  } else {
+    docProjects.unshift(proj); // terbaru di atas
+  }
+
+  saveDocProjects(docProjects);
+  closeDocForm();
+  renderDocList();
+  showToast(`✅ Proyek "${title}" disimpan (${docFormPhotos.length} foto).`, 'success');
+});
+
+// ---- Cancel buttons ----
+document.getElementById('doc-form-cancel')?.addEventListener('click',  closeDocForm);
+document.getElementById('doc-form-cancel2')?.addEventListener('click', closeDocForm);
+
+// ---- Tambah proyek baru ----
+document.getElementById('add-doc-project-btn')?.addEventListener('click', () => openDocForm(-1));
+
+// ---- switchTab trigger ----
+// (dipanggil otomatis dari switchTab() di bagian atas file ini)
+function renderDokumentasiAdmin() {
+  renderDocList();
+}
 
 // ============================================================
 // WATERMARK ADMIN PANEL
