@@ -1136,3 +1136,53 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     window.scrollTo({ top: target.offsetTop - navH, behavior: 'smooth' });
   });
 });
+
+/* ============================================================
+   20. NAVBAR DROPDOWN — click/hover toggle (cross-device)
+   ============================================================ */
+(function initNavDropdown() {
+  const dropdowns = document.querySelectorAll('.nav-dropdown');
+  if (!dropdowns.length) return;
+
+  function closeAll(except) {
+    dropdowns.forEach(d => {
+      if (d !== except) d.classList.remove('open');
+    });
+  }
+
+  dropdowns.forEach(dropdown => {
+    const trigger = dropdown.querySelector('.nav-dropdown-trigger');
+    if (!trigger) return;
+
+    // Desktop: hover buka, mouse-leave tutup
+    dropdown.addEventListener('mouseenter', () => {
+      closeAll(dropdown);
+      dropdown.classList.add('open');
+    });
+    dropdown.addEventListener('mouseleave', () => {
+      dropdown.classList.remove('open');
+    });
+
+    // Mobile/click: toggle saat klik trigger
+    trigger.addEventListener('click', (e) => {
+      const isOpen = dropdown.classList.contains('open');
+      closeAll(null);
+      if (!isOpen) {
+        e.preventDefault(); // cegah navigasi langsung saat buka dropdown
+        dropdown.classList.add('open');
+      }
+    });
+  });
+
+  // Klik di luar → tutup semua
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nav-dropdown')) {
+      closeAll(null);
+    }
+  });
+
+  // Escape key → tutup semua
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAll(null);
+  });
+})();
