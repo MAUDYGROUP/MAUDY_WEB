@@ -1427,18 +1427,28 @@ function renderDocPhotosPreview() {
       <div class="doc-photo-caption-overlay">
         <input class="doc-caption-input" type="text" value="${escapeHtml(ph.caption||'')}"
                placeholder="Keterangan foto..." data-i="${i}" />
+        <label style="display:flex;align-items:center;gap:4px;margin-top:4px;font-size:0.75rem;color:#fff;cursor:pointer;background:rgba(0,0,0,0.5);padding:2px 4px;border-radius:4px;width:fit-content;">
+          <input type="checkbox" class="doc-featured-checkbox" data-i="${i}" ${ph.featured ? 'checked' : ''} />
+          🌟 Jadikan Unggulan
+        </label>
       </div>
       <button class="doc-photo-del" data-i="${i}" title="Hapus foto">✕</button>
     </div>
   `).join('');
 
-  // Caption edit
+  // Caption & Featured edit
   preview.querySelectorAll('.doc-caption-input').forEach(inp => {
     inp.addEventListener('input', e => {
       const i = parseInt(e.target.dataset.i);
       if (docFormPhotos[i]) docFormPhotos[i].caption = e.target.value;
     });
     inp.addEventListener('mousedown', e => e.stopPropagation());
+  });
+  preview.querySelectorAll('.doc-featured-checkbox').forEach(chk => {
+    chk.addEventListener('change', e => {
+      const i = parseInt(e.target.dataset.i);
+      if (docFormPhotos[i]) docFormPhotos[i].featured = e.target.checked;
+    });
   });
 
   // Delete foto
@@ -1501,7 +1511,7 @@ document.getElementById('doc-photo-input')?.addEventListener('change', async e =
       const json = await res.json();
       if (!json.success) throw new Error(json.message);
       
-      docFormPhotos.push({ image: '../' + json.url, caption: '' });
+      docFormPhotos.push({ image: '../' + json.url, caption: '', featured: false });
     } catch (err) {
       showToast(`⚠️ Gagal upload: ${files[i].name} (${err.message || err})`, 'error');
     }

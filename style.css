@@ -948,10 +948,13 @@ input, textarea, select {
   color: white;
 }
 
-.portfolio-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.portfolio-marquee-track {
   gap: 1.5rem;
+  align-items: stretch;
+}
+.portfolio-marquee-track .portfolio-card {
+  width: 350px;
+  flex-shrink: 0;
 }
 
 .portfolio-card {

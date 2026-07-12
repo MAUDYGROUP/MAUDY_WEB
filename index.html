@@ -43,9 +43,9 @@
 
   <!-- Preload critical assets -->
   <link rel="preload" as="image" href="assets/hero-bg.webp" type="image/webp" fetchpriority="high" />
-  <link rel="preload" as="style" href="style.css?v=4" />
+  <link rel="preload" as="style" href="style.css?v=6" />
   <!-- Menggunakan CSS utama dengan cache-busting -->
-  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="style.css?v=6" />
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -451,55 +451,14 @@
           <p class="section-desc" data-i18n="portfolio_desc">Beberapa karya terbaik yang telah kami selesaikan untuk klien dari berbagai industri.</p>
         </div>
 
-        <div class="portfolio-filter" role="group" aria-label="Filter portofolio">
-          <button class="filter-btn active" data-filter="all" data-i18n="filter_all">Semua</button>
-          <button class="filter-btn" data-filter="web" data-i18n="filter_web">Web &amp; Software</button>
-          <button class="filter-btn" data-filter="network" data-i18n="filter_network">Jaringan</button>
-          <button class="filter-btn" data-filter="security" data-i18n="filter_security">Keamanan</button>
+        <div class="portfolio-filter" id="portfolio-filter" role="group" aria-label="Filter portofolio">
+          <button class="filter-btn active" data-filter="all">Semua</button>
         </div>
 
-        <div class="portfolio-grid" id="portfolio-grid">
-          <article class="portfolio-card" data-category="web" data-animate="fade-up" data-delay="0">
-            <div class="portfolio-img">
-              <picture>
-                <source srcset="assets/portfolio-web.webp" type="image/webp" />
-                <img src="assets/portfolio-web.png" alt="Dashboard Analytics Web Application" loading="lazy" width="600" height="400" />
-              </picture>
-              <div class="portfolio-overlay">
-                <span class="portfolio-tag" data-i18n="ptag_web">Web Development</span>
-                <h3 data-i18n="p1_title">Sistem Analitik Bisnis</h3>
-                <p data-i18n="p1_desc">Dashboard analytics real-time untuk monitoring KPI bisnis perusahaan manufaktur.</p>
-              </div>
-            </div>
-          </article>
-
-          <article class="portfolio-card" data-category="network" data-animate="fade-up" data-delay="100">
-            <div class="portfolio-img">
-              <picture>
-                <source srcset="assets/portfolio-network.webp" type="image/webp" />
-                <img src="assets/portfolio-network.png" alt="Network Infrastructure Monitoring Dashboard" loading="lazy" width="600" height="400" />
-              </picture>
-              <div class="portfolio-overlay">
-                <span class="portfolio-tag" data-i18n="ptag_network">Infrastruktur Jaringan</span>
-                <h3 data-i18n="p2_title">Monitoring Jaringan Enterprise</h3>
-                <p data-i18n="p2_desc">Instalasi dan konfigurasi infrastruktur jaringan untuk gedung 10 lantai dengan 500+ node.</p>
-              </div>
-            </div>
-          </article>
-
-          <article class="portfolio-card" data-category="security" data-animate="fade-up" data-delay="200">
-            <div class="portfolio-img">
-              <picture>
-                <source srcset="assets/portfolio-security.webp" type="image/webp" />
-                <img src="assets/portfolio-security.png" alt="Security CCTV Control Room" loading="lazy" width="600" height="400" />
-              </picture>
-              <div class="portfolio-overlay">
-                <span class="portfolio-tag" data-i18n="ptag_security">Sistem Keamanan</span>
-                <h3 data-i18n="p3_title">Pusat Monitoring Keamanan</h3>
-                <p data-i18n="p3_desc">Instalasi CCTV dan security system terintegrasi untuk kompleks perkantoran modern.</p>
-              </div>
-            </div>
-          </article>
+        <div class="marquee-wrapper" id="portfolio-marquee-wrapper" style="margin-top:2rem;">
+          <div class="marquee-track portfolio-marquee-track" id="portfolio-grid">
+            <!-- Dinamis via script.js -->
+          </div>
         </div>
       </div>
     </section>
@@ -960,6 +919,6 @@
   <script src="protect.js"></script>
 
   <!-- Main Script (deferred) -->
-  <script src="script.js?v=5" defer></script>
+  <script src="script.js?v=6" defer></script>
 </body>
 </html>

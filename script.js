@@ -906,27 +906,82 @@ function closeLightbox() {
 /* ============================================================
    13. PORTFOLIO FILTER
    ============================================================ */
-function initPortfolioFilter() {
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const cards = document.querySelectorAll('.portfolio-card');
-  if (!filterBtns.length) return;
+function renderPortfolioMarquee(filter = 'all') {
+  const container = document.getElementById('portfolio-grid');
+  if (!container) return;
 
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.dataset.filter;
+  const cms = window._CMS_DATA || {};
+  let projects = cms.docProjects || [];
 
-      cards.forEach(card => {
-        if (filter === 'all' || card.dataset.category === filter) {
-          card.classList.remove('hidden');
-          card.style.animation = 'fadeInUp 0.4s ease both';
-        } else {
-          card.classList.add('hidden');
+  // Ambil hanya foto yang ditandai 'unggulan'
+  let featuredPhotos = [];
+  projects.forEach(p => {
+    if (p.photos) {
+      p.photos.forEach(ph => {
+        if (ph.featured) {
+          featuredPhotos.push({
+            category: p.category || 'Lainnya',
+            image: ph.image,
+            title: p.title || 'Proyek Tanpa Judul',
+            client: p.client || '',
+            desc: ph.caption || p.description || ''
+          });
         }
       });
-    });
+    }
   });
+
+  // Kumpulkan kategori unik untuk filter
+  const categories = [...new Set(featuredPhotos.map(f => f.category))];
+  
+  // Render Filter Buttons (hanya dijalankan sekali saat inisialisasi)
+  const filterContainer = document.getElementById('portfolio-filter');
+  if (filterContainer && !filterContainer.dataset.initialized) {
+    let filterHTML = `<button class="filter-btn active" data-filter="all">Semua</button>`;
+    categories.forEach(cat => {
+      filterHTML += `<button class="filter-btn" data-filter="${cat}">${cat}</button>`;
+    });
+    filterContainer.innerHTML = filterHTML;
+    filterContainer.dataset.initialized = "true";
+
+    // Re-attach event listeners
+    filterContainer.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderPortfolioMarquee(btn.dataset.filter);
+      });
+    });
+  }
+
+  // Filter Data
+  const filtered = filter === 'all' ? featuredPhotos : featuredPhotos.filter(f => f.category === filter);
+  
+  if (filtered.length === 0) {
+    container.innerHTML = `<div style="text-align:center;width:100%;color:var(--text3);padding:2rem;">Belum ada proyek unggulan.</div>`;
+    return;
+  }
+
+  // Render Marquee
+  // Gandakan array agar bisa looping tanpa putus
+  const doubled = [...filtered, ...filtered, ...filtered];
+  
+  container.innerHTML = doubled.map(f => `
+    <article class="portfolio-card">
+      <div class="portfolio-img">
+        <img src="${f.image.startsWith('../') ? f.image.replace('../', '') : f.image}" alt="${f.title}" loading="lazy" />
+        <div class="portfolio-overlay">
+          <span class="portfolio-tag">${f.category}</span>
+          <h3>${f.title}</h3>
+          <p>${f.desc}</p>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+function initPortfolioFilter() {
+  renderPortfolioMarquee('all');
 }
 
 /* ============================================================
