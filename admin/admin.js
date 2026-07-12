@@ -228,6 +228,15 @@ function showLogin() {
 
 const LAST_TAB_KEY = 'maudy_admin_last_tab';
 
+// Fitur Darurat: Reset Password ke Default jika mengunjungi ?reset=1
+if (window.location.search.includes('reset=1')) {
+  localStorage.removeItem(USERS_KEY);
+  localStorage.removeItem(AUTH_KEY);
+  localStorage.removeItem(SESSION_KEY);
+  alert('Data login (username & password) telah di-reset ke bawaan sistem (admin / maudy2025).');
+  window.location.href = window.location.pathname;
+}
+
 async function showAdmin() {
   loginScreen.classList.add('hidden');
   adminApp.classList.remove('hidden');
@@ -254,7 +263,7 @@ loginForm.addEventListener('submit', (e) => {
   loginError.textContent = '';
 
   const user = document.getElementById('admin-user').value.trim();
-  const pass = document.getElementById('admin-pass').value;
+  const pass = document.getElementById('admin-pass').value.trim();
 
   if (!user || !pass) {
     loginError.textContent = 'Isi username dan password.';
