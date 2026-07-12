@@ -1330,6 +1330,7 @@ function renderDocList() {
   list.innerHTML = docProjects.map((p, idx) => {
     const thumb = p.photos?.[0]?.image || '';
     const photoCount = (p.photos || []).length;
+    const featuredCount = (p.photos || []).filter(ph => ph.featured).length;
     return `
     <div class="doc-admin-proj-row" data-idx="${idx}">
       <div class="doc-admin-proj-thumb">
@@ -1341,6 +1342,7 @@ function renderDocList() {
         <div class="doc-admin-proj-title">${escapeHtml(p.title || 'Tanpa Judul')}</div>
         <div class="doc-admin-proj-meta">
           ${p.category ? `<span class="doc-admin-cat">${escapeHtml(p.category)}</span>` : ''}
+          ${featuredCount > 0 ? `<span class="doc-admin-cat" style="background:rgba(250,204,21,0.2);color:#ca8a04;border-color:rgba(250,204,21,0.4)">🌟 ${featuredCount} Unggulan</span>` : ''}
           ${p.client   ? `<span>${escapeHtml(p.client)}</span>` : ''}
           ${p.date     ? `<span>${escapeHtml(p.date)}</span>`   : ''}
           <span>${photoCount} foto</span>
