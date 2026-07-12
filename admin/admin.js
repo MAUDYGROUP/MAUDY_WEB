@@ -90,6 +90,47 @@ const DEFAULT_DATA = {
       avatar: 'D',
     },
   ],
+  docProjects: [
+    {
+      id: 'proj-dummy-1',
+      title: 'Sistem Analitik Bisnis',
+      client: 'Perusahaan Manufaktur',
+      category: 'Web Development',
+      date: '2024-01-10',
+      description: 'Dashboard analytics real-time untuk monitoring KPI bisnis perusahaan manufaktur.',
+      photos: [
+        { image: '../assets/portfolio-web.webp', caption: 'Dashboard Utama', featured: true }
+      ],
+      published: true,
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'proj-dummy-2',
+      title: 'Monitoring Jaringan Enterprise',
+      client: 'Gedung Perkantoran',
+      category: 'Infrastruktur Jaringan',
+      date: '2024-02-15',
+      description: 'Instalasi dan konfigurasi infrastruktur jaringan untuk gedung 10 lantai dengan 500+ node.',
+      photos: [
+        { image: '../assets/portfolio-network.webp', caption: 'Server Room', featured: true }
+      ],
+      published: true,
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'proj-dummy-3',
+      title: 'Pusat Monitoring Keamanan',
+      client: 'Kompleks Modern',
+      category: 'Sistem Keamanan',
+      date: '2024-03-20',
+      description: 'Instalasi CCTV dan security system terintegrasi untuk kompleks perkantoran modern.',
+      photos: [
+        { image: '../assets/portfolio-security.webp', caption: 'Control Room CCTV', featured: true }
+      ],
+      published: true,
+      updatedAt: new Date().toISOString()
+    }
+  ]
 };
 
 // ============================================================
@@ -1293,6 +1334,21 @@ const DOC_KEY = 'maudy_dokumentasi';
 
 function loadDocProjects() {
   if (!data.docProjects) data.docProjects = [];
+  
+  // Inject dummy data once so user gets the initial portfolio photos back
+  if (!data._dummyDocLoaded) {
+    if (DEFAULT_DATA.docProjects && DEFAULT_DATA.docProjects.length > 0) {
+      DEFAULT_DATA.docProjects.forEach(dp => {
+        if (!data.docProjects.find(p => p.id === dp.id)) {
+          data.docProjects.push(JSON.parse(JSON.stringify(dp)));
+        }
+      });
+      data._dummyDocLoaded = true;
+      // Auto-save so it persists
+      saveDocProjects(data.docProjects).catch(e => console.error(e));
+    }
+  }
+  
   return data.docProjects;
 }
 
