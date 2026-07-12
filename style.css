@@ -391,6 +391,18 @@ input, textarea, select {
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
+
+/* Jembatan tak kasat mata untuk hover navbar dropdown agar tidak tertutup */
+.nav-submenu::before {
+  content: '';
+  position: absolute;
+  top: -24px;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: transparent;
+}
+
 .nav-dropdown.open .nav-submenu {
   display: block !important;
   opacity: 1;
