@@ -169,7 +169,7 @@
 
   // ---- 6. PARTNERS MARQUEE ----
   if (cms.partners && cms.partners.length > 0) {
-    const track = document.querySelector('.marquee-track');
+    const track = document.getElementById('partners-marquee');
     if (track) {
       const partners = cms.partners.filter(p => p && (typeof p === 'string' ? p.trim() : p.name));
       const normalized = partners.map(p => typeof p === 'string' ? { name: p, logo: null, url: '' } : { ...p, url: p.url || '' });
@@ -1106,7 +1106,7 @@ function applyLanguage(lang, animate = true) {
 
     // Partners
     if (cms.partners && cms.partners.length > 0) {
-      const track = document.querySelector('.marquee-track');
+      const track = document.getElementById('partners-marquee');
       if (track) {
         const partners = cms.partners.filter(p => p && (typeof p === 'string' ? p.trim() : p.name));
         const normalized = partners.map(p => typeof p === 'string' ? { name: p, logo: null } : p);
