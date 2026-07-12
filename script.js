@@ -196,6 +196,11 @@
 
   // ---- Store cms globally for other functions to access ----
   window._CMS_DATA = cms;
+  
+  // Re-initialize components that depend on CMS data now that the data is loaded
+  if (typeof initTestimonials === 'function') initTestimonials();
+  if (typeof initCertifications === 'function') initCertifications();
+  if (typeof initPortfolioFilter === 'function') initPortfolioFilter();
 })();
 
 
