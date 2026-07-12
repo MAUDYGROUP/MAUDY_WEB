@@ -5,10 +5,11 @@
 const DOC_KEY = 'maudy_dokumentasi';
 
 // ===== Load data =====
-function loadDocs() {
+async function loadDocs() {
   try {
-    const raw = localStorage.getItem(DOC_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const res = await fetch('api/load.php');
+    const data = await res.json();
+    return data && data.docProjects ? data.docProjects : [];
   } catch (_) { return []; }
 }
 
@@ -213,10 +214,11 @@ document.getElementById('doc-lb-img')?.addEventListener('touchend', e => {
 });
 
 // ===== INIT =====
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('doc-year').textContent = new Date().getFullYear();
 
-  allProjects = loadDocs().filter(p => p.published !== false); // filter yg dipublish
+  const docs = await loadDocs();
+  allProjects = docs.filter(p => p.published !== false); // filter yg dipublish
 
   renderFilters(allProjects);
   renderGrid();

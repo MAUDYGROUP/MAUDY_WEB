@@ -11,13 +11,12 @@
    0. CMS DATA LOADER — Reads from Admin Panel (localStorage)
       Applies ALL admin changes to DOM immediately on page load
    ============================================================ */
-(function loadCMSData() {
-  const CMS_KEY = 'maudy_cms_data';
+(async function loadCMSData() {
   let cms = null;
   try {
-    const raw = localStorage.getItem(CMS_KEY);
-    if (raw) cms = JSON.parse(raw);
-  } catch (e) { /* use defaults */ }
+    const res = await fetch('api/load.php');
+    if (res.ok) cms = await res.json();
+  } catch (e) { console.error('Failed to load CMS data', e); }
   if (!cms) return;
 
   /* ---- Helpers ---- */

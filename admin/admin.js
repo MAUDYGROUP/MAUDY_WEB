@@ -158,20 +158,32 @@ function logout() {
 // ============================================================
 // DATA MANAGEMENT
 // ============================================================
-function loadData() {
+async function loadData() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return JSON.parse(JSON.stringify(DEFAULT_DATA));
-    const saved = JSON.parse(raw);
-    // Deep merge with defaults to handle missing keys
+    const res = await fetch('../api/load.php');
+    if (!res.ok) throw new Error('Network error');
+    const saved = await res.json();
+    if (!saved) return JSON.parse(JSON.stringify(DEFAULT_DATA));
     return deepMerge(JSON.parse(JSON.stringify(DEFAULT_DATA)), saved);
   } catch (e) {
+    console.error('Failed to load data from server:', e);
     return JSON.parse(JSON.stringify(DEFAULT_DATA));
   }
 }
 
-function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+async function saveData(dataObj) {
+  try {
+    const res = await fetch('../api/save.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataObj)
+    });
+    const result = await res.json();
+    return result.success;
+  } catch (e) {
+    console.error('Failed to save data:', e);
+    return false;
+  }
 }
 
 function deepMerge(target, source) {
@@ -189,7 +201,7 @@ function deepMerge(target, source) {
 // ============================================================
 // DOM REFS
 // ============================================================
-let data = loadData();
+let data = JSON.parse(JSON.stringify(DEFAULT_DATA)); // Akan ditimpa saat showAdmin
 
 const loginScreen  = document.getElementById('login-screen');
 const adminApp     = document.getElementById('admin-app');
@@ -216,10 +228,10 @@ function showLogin() {
 
 const LAST_TAB_KEY = 'maudy_admin_last_tab';
 
-function showAdmin() {
+async function showAdmin() {
   loginScreen.classList.add('hidden');
   adminApp.classList.remove('hidden');
-  data = loadData();
+  data = await loadData();
   populateForms();
   updateDashboard();
 
@@ -545,10 +557,18 @@ function createPartnerRow(partner, idx) {
     btn.disabled = true;
     try {
       const webp = await fileToWebP(file, 200, 100, 0.80);
-      if (data.partners[idx]) data.partners[idx].logo = webp;
+      const res = await fetch('../api/upload.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: webp })
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message);
+
+      if (data.partners[idx]) data.partners[idx].logo = json.url;
       // Update preview
       const preview = row.querySelector('.partner-logo-preview');
-      preview.innerHTML = `<img src="${webp}" alt="Logo" draggable="false" data-no-protect="true" />`;
+      preview.innerHTML = `<img src="../${json.url}" alt="Logo" draggable="false" data-no-protect="true" />`;
       // Tambah tombol hapus logo jika belum ada
       if (!row.querySelector('.btn-remove-logo')) {
         const rmLogo = document.createElement('button');
@@ -559,9 +579,9 @@ function createPartnerRow(partner, idx) {
         row.querySelector('.partner-logo-upload').appendChild(rmLogo);
         rmLogo.addEventListener('click', () => removeLogo(row, idx));
       }
-      showToast('✅ Logo dikonversi ke WebP (200×100px)', 'success');
+      showToast('✅ Logo berhasil diupload dan dikonversi (WebP)', 'success');
     } catch (err) {
-      showToast('❌ Gagal memproses gambar: ' + err, 'error');
+      showToast('❌ Gagal upload gambar: ' + err, 'error');
     } finally {
       btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload`;
       btn.disabled = false;
@@ -723,12 +743,19 @@ document.getElementById('add-testi-btn').addEventListener('click', () => {
 // ============================================================
 // SAVE ALL
 // ============================================================
-saveAllBtn.addEventListener('click', () => {
+saveAllBtn.addEventListener('click', async () => {
+  saveAllBtn.disabled = true;
+  saveStatus.textContent = 'Menyimpan...';
   collectFormData();
-  saveData(data);
-  showToast('✅ Data berhasil disimpan! Reload website untuk melihat perubahan.', 'success');
-  showSaveStatus();
-  updateDashboard();
+  const success = await saveData(data);
+  saveAllBtn.disabled = false;
+  if (success) {
+    showToast('✅ Data berhasil disimpan! Reload website untuk melihat perubahan.', 'success');
+    showSaveStatus();
+    updateDashboard();
+  } else {
+    showToast('❌ Gagal menyimpan data ke server.', 'error');
+  }
 });
 
 function collectFormData() {
@@ -1074,9 +1101,9 @@ function escapeHtml(str = '') {
 // ============================================================
 // INIT
 // ============================================================
-function init() {
+async function init() {
   if (isLoggedIn()) {
-    showAdmin();
+    await showAdmin();
   } else {
     showLogin();
   }
@@ -1175,8 +1202,16 @@ function createCertRow(cert, idx) {
     uploadBtn.disabled = true;
     try {
       const webp = await fileToWebP(file, 600, 420, 0.85);
-      getCert().image = webp;
-      preview.innerHTML = `<img src="${webp}" alt="Sertifikat" draggable="false" data-no-protect="true" />`;
+      const res = await fetch('../api/upload.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: webp })
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message);
+
+      getCert().image = json.url;
+      preview.innerHTML = `<img src="../${json.url}" alt="Sertifikat" draggable="false" data-no-protect="true" />`;
       // Tambah tombol hapus gambar
       const imgBtns = row.querySelector('.cert-admin-img-btns');
       if (!imgBtns.querySelector('.btn-remove-logo')) {
@@ -1185,7 +1220,7 @@ function createCertRow(cert, idx) {
         imgBtns.appendChild(rm);
         rm.addEventListener('click', () => removeCertImg(row, idx));
       }
-      showToast('✅ Gambar sertifikat dikonversi ke WebP (600×420px)', 'success');
+      showToast('✅ Gambar sertifikat berhasil diupload (WebP)', 'success');
     } catch (err) {
       showToast('❌ Gagal upload: ' + err, 'error');
     } finally {
@@ -1227,14 +1262,13 @@ document.getElementById('add-cert-btn')?.addEventListener('click', () => {
 const DOC_KEY = 'maudy_dokumentasi';
 
 function loadDocProjects() {
-  try {
-    const raw = localStorage.getItem(DOC_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (_) { return []; }
+  if (!data.docProjects) data.docProjects = [];
+  return data.docProjects;
 }
 
-function saveDocProjects(projects) {
-  localStorage.setItem(DOC_KEY, JSON.stringify(projects));
+async function saveDocProjects(projects) {
+  data.docProjects = projects;
+  await saveData(data);
 }
 
 function genDocId() {
@@ -1299,11 +1333,11 @@ function renderDocList() {
     btn.addEventListener('click', () => openDocForm(parseInt(btn.dataset.idx)));
   });
   list.querySelectorAll('.doc-del-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const idx = parseInt(btn.dataset.idx);
       if (!confirm(`Hapus proyek "${docProjects[idx]?.title || ''}"? Semua foto akan hilang.`)) return;
       docProjects.splice(idx, 1);
-      saveDocProjects(docProjects);
+      await saveDocProjects(docProjects);
       renderDocList();
       showToast('✅ Proyek dihapus.', 'success');
     });
@@ -1428,9 +1462,17 @@ document.getElementById('doc-photo-input')?.addEventListener('change', async e =
     progressText.textContent = `Mengkonversi ${i + 1}/${files.length}...`;
     try {
       const webp = await photoToWebP(files[i]);
-      docFormPhotos.push({ image: webp, caption: '' });
+      const res = await fetch('../api/upload.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: webp })
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message);
+      
+      docFormPhotos.push({ image: '../' + json.url, caption: '' });
     } catch (err) {
-      showToast(`⚠️ Gagal konversi: ${files[i].name}`, 'error');
+      showToast(`⚠️ Gagal upload: ${files[i].name} (${err.message || err})`, 'error');
     }
   }
 
@@ -1444,7 +1486,7 @@ document.getElementById('doc-photo-input')?.addEventListener('change', async e =
 });
 
 // ---- Simpan proyek ----
-document.getElementById('doc-form-save')?.addEventListener('click', () => {
+document.getElementById('doc-form-save')?.addEventListener('click', async () => {
   const title = document.getElementById('doc-proj-title').value.trim();
   const statusEl = document.getElementById('doc-form-status');
   statusEl.style.display = 'none';
@@ -1475,7 +1517,7 @@ document.getElementById('doc-form-save')?.addEventListener('click', () => {
     docProjects.unshift(proj); // terbaru di atas
   }
 
-  saveDocProjects(docProjects);
+  await saveDocProjects(docProjects);
   closeDocForm();
   renderDocList();
   showToast(`✅ Proyek "${title}" disimpan (${docFormPhotos.length} foto).`, 'success');
