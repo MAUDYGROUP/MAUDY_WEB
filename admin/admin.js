@@ -1221,8 +1221,6 @@ document.getElementById('add-cert-btn')?.addEventListener('click', () => {
   if (rows.length) rows[rows.length - 1].querySelector('.cert-title-input')?.focus();
 });
 
-});
-
 // ============================================================
 // DOKUMENTASI PROYEK — ADMIN
 // ============================================================
