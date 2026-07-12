@@ -844,18 +844,27 @@ function showSecStatus(type, msg) {
 // ============================================================
 // USER MANAGEMENT
 // ============================================================
-function renderUserList() {
+async function renderUserList() {
   const list = document.getElementById('user-list');
   if (!list) return;
-  const users = getUsers();
-  const currentUser = sessionStorage.getItem('maudy_current_user') || users[0].username;
+  
+  let users = [];
+  try {
+    const res = await fetch('../api/auth.php?action=get_users', { credentials: 'same-origin' });
+    const data = await res.json();
+    if (data.success) users = data.users;
+  } catch (e) {
+    console.error('Gagal memuat user', e);
+  }
+
+  const currentUser = localStorage.getItem('maudy_current_user') || (users[0] ? users[0].username : '');
 
   list.innerHTML = '';
   users.forEach((u, idx) => {
     const isMe = u.username === currentUser;
     const row  = document.createElement('div');
     row.className = 'user-row' + (isMe ? ' user-row-me' : '');
-    row.dataset.idx = idx;
+    row.dataset.username = escapeHtml(u.username);
     row.innerHTML = `
       <div class="user-row-info">
         <div class="user-avatar">${u.username[0].toUpperCase()}</div>
@@ -865,12 +874,12 @@ function renderUserList() {
         </div>
       </div>
       <div class="user-row-actions">
-        <button class="btn-edit-user" data-idx="${idx}" title="Ganti Password">
+        <button class="btn-edit-user" data-username="${escapeHtml(u.username)}" title="Ganti Password">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
           Ganti Password
         </button>
         ${users.length > 1 && !isMe
-          ? `<button class="btn-remove user-del-btn" data-idx="${idx}" title="Hapus User">
+          ? `<button class="btn-remove user-del-btn" data-username="${escapeHtml(u.username)}" title="Hapus User">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
              </button>`
           : ''}
@@ -881,29 +890,37 @@ function renderUserList() {
 
   // Event: hapus user
   list.querySelectorAll('.user-del-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const idx = parseInt(btn.dataset.idx);
-      const users = getUsers();
-      if (users.length <= 1) { showToast('❌ Minimal 1 user harus ada.', 'error'); return; }
-      if (!confirm(`Hapus user "${users[idx].username}"?`)) return;
-      users.splice(idx, 1);
-      saveUsers(users);
-      renderUserList();
-      showToast('✅ User dihapus.', 'success');
+    btn.addEventListener('click', async () => {
+      const username = btn.dataset.username;
+      if (!confirm(`Hapus user "${username}"?`)) return;
+      try {
+        const res = await fetch('../api/auth.php?action=delete_user', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username }), credentials: 'same-origin'
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('✅ User dihapus.', 'success');
+          renderUserList();
+        } else {
+          showToast('❌ ' + (data.message || 'Gagal menghapus'), 'error');
+        }
+      } catch (e) {
+        showToast('❌ Kesalahan jaringan.', 'error');
+      }
     });
   });
 
   // Event: ganti password user
   list.querySelectorAll('.btn-edit-user').forEach(btn => {
     btn.addEventListener('click', () => {
-      const idx = parseInt(btn.dataset.idx);
-      openChangePassModal(idx);
+      openChangePassModal(btn.dataset.username);
     });
   });
 }
 
 // ===== Modal ganti password =====
-function openChangePassModal(userIdx) {
+function openChangePassModal(targetUsername) {
   let modal = document.getElementById('user-pass-modal');
   if (!modal) {
     modal = document.createElement('div');
@@ -952,16 +969,13 @@ function openChangePassModal(userIdx) {
     });
   }
 
-  // Set user context
-  const users = getUsers();
-  const u = users[userIdx];
-  modal.querySelector('#user-modal-title').textContent = `Ganti Password — ${u.username}`;
-  modal.querySelector('#user-modal-desc').textContent  = `Masukkan password baru untuk user "${u.username}".`;
+  modal.querySelector('#user-modal-title').textContent = `Ganti Password — ${targetUsername}`;
+  modal.querySelector('#user-modal-desc').textContent  = `Masukkan password baru untuk user "${targetUsername}".`;
   modal.querySelector('#modal-new-pass').value     = '';
   modal.querySelector('#modal-confirm-pass').value = '';
   modal.querySelector('#modal-status').style.display = 'none';
 
-  modal.querySelector('#modal-save').onclick = () => {
+  modal.querySelector('#modal-save').onclick = async () => {
     const np = modal.querySelector('#modal-new-pass').value;
     const cp = modal.querySelector('#modal-confirm-pass').value;
     const statusEl = modal.querySelector('#modal-status');
@@ -972,11 +986,22 @@ function openChangePassModal(userIdx) {
     if (np !== cp) {
       statusEl.className = 'form-status error'; statusEl.textContent = 'Konfirmasi tidak cocok.'; statusEl.style.display = 'block'; return;
     }
-    const freshUsers = getUsers();
-    freshUsers[userIdx] = { ...freshUsers[userIdx], password: np };
-    saveUsers(freshUsers);
-    showToast(`✅ Password "${u.username}" berhasil diubah.`, 'success');
-    closePassModal();
+    
+    try {
+      const res = await fetch('../api/auth.php?action=change_password', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: targetUsername, newPassword: np }), credentials: 'same-origin'
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`✅ Password "${targetUsername}" berhasil diubah.`, 'success');
+        closePassModal();
+      } else {
+        statusEl.className = 'form-status error'; statusEl.textContent = data.message || 'Gagal mengubah password.'; statusEl.style.display = 'block';
+      }
+    } catch (e) {
+      statusEl.className = 'form-status error'; statusEl.textContent = 'Kesalahan jaringan.'; statusEl.style.display = 'block';
+    }
   };
 
   modal.removeAttribute('hidden');
@@ -990,7 +1015,7 @@ function closePassModal() {
 }
 
 // ===== Tambah user baru =====
-document.getElementById('add-user-btn')?.addEventListener('click', () => {
+document.getElementById('add-user-btn')?.addEventListener('click', async () => {
   const usernameEl = document.getElementById('new-username');
   const passEl     = document.getElementById('new-user-pass');
   const statusEl   = document.getElementById('add-user-status');
@@ -1006,25 +1031,27 @@ document.getElementById('add-user-btn')?.addEventListener('click', () => {
     statusEl.className = 'form-status error'; statusEl.textContent = 'Password minimal 6 karakter.'; statusEl.style.display = 'block'; return;
   }
 
-  const users = getUsers();
-  if (users.some(u => u.username === username)) {
-    statusEl.className = 'form-status error'; statusEl.textContent = `Username "${username}" sudah ada.`; statusEl.style.display = 'block'; return;
+  try {
+    const res = await fetch('../api/auth.php?action=add_user', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }), credentials: 'same-origin'
+    });
+    const data = await res.json();
+    if (data.success) {
+      usernameEl.value = '';
+      passEl.value = '';
+      statusEl.className = 'form-status success';
+      statusEl.textContent = `✅ User "${username}" berhasil ditambahkan.`;
+      statusEl.style.display = 'block';
+      renderUserList();
+      showToast(`✅ User "${username}" ditambahkan.`, 'success');
+    } else {
+      statusEl.className = 'form-status error'; statusEl.textContent = data.message || 'Gagal menambah user.'; statusEl.style.display = 'block';
+    }
+  } catch (e) {
+    statusEl.className = 'form-status error'; statusEl.textContent = 'Kesalahan jaringan.'; statusEl.style.display = 'block';
   }
-  if (users.length >= 10) {
-    statusEl.className = 'form-status error'; statusEl.textContent = 'Maksimum 10 user.'; statusEl.style.display = 'block'; return;
-  }
-
-  users.push({ username, password, role: 'admin' });
-  saveUsers(users);
-  usernameEl.value = '';
-  passEl.value = '';
-  statusEl.className = 'form-status success';
-  statusEl.textContent = `✅ User "${username}" berhasil ditambahkan.`;
-  statusEl.style.display = 'block';
-  renderUserList();
-  showToast(`✅ User "${username}" ditambahkan.`, 'success');
 });
-
 // (renderUserList dipanggil via switchTab() — tidak perlu listener duplikat di sini)
 
 
