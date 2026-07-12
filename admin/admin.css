@@ -530,14 +530,26 @@ input[type="number"] { padding-left: 0.875rem !important; }
   padding: 0.5rem 0.75rem;
   align-items: center;
 }
-.partner-row-v2 .partner-name-input {
+.partner-row-v2 .partner-inputs {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.partner-row-v2 .partner-name-input,
+.partner-row-v2 .partner-url-input {
   background: transparent;
   border: none;
   padding: 0.25rem 0;
   color: var(--text);
+  width: 100%;
 }
-.partner-row-v2 .partner-name-input:focus {
+.partner-row-v2 .partner-url-input {
+  font-size: 0.8rem;
+  color: var(--text2);
+}
+.partner-row-v2 .partner-name-input:focus,
+.partner-row-v2 .partner-url-input:focus {
   box-shadow: none;
   background: transparent;
 }

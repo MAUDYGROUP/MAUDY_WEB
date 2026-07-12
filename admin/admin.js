@@ -44,16 +44,16 @@ const DEFAULT_DATA = {
     tiktok:    '',
   },
   partners: [
-    { name: 'Ubiquiti',  logo: null },
-    { name: 'TP-Link',   logo: null },
-    { name: 'ASUS',      logo: null },
-    { name: 'Microsoft', logo: null },
-    { name: 'Cisco',     logo: null },
-    { name: 'HP',        logo: null },
-    { name: 'Dell',      logo: null },
-    { name: 'Lenovo',    logo: null },
-    { name: 'MikroTik',  logo: null },
-    { name: 'Hikvision', logo: null },
+    { name: 'Ubiquiti',  logo: null, url: '' },
+    { name: 'TP-Link',   logo: null, url: '' },
+    { name: 'ASUS',      logo: null, url: '' },
+    { name: 'Microsoft', logo: null, url: '' },
+    { name: 'Cisco',     logo: null, url: '' },
+    { name: 'HP',        logo: null, url: '' },
+    { name: 'Dell',      logo: null, url: '' },
+    { name: 'Lenovo',    logo: null, url: '' },
+    { name: 'MikroTik',  logo: null, url: '' },
+    { name: 'Hikvision', logo: null, url: '' },
   ],
   certificates: [
     { title: 'Cisco Certified Network Associate', issuer: 'Cisco', year: '2024', category: 'Networking', color: '#0D8ABC', image: null },
@@ -423,10 +423,12 @@ function updateStatPreviews() {
 let dragSrc = null;
 let dragPlaceholder = null;
 
-/* Normalisasi data lama (string) ke format baru ({ name, logo }) */
+/* Normalisasi data lama (string) ke format baru ({ name, logo, url }) */
 function normalizePartners(arr) {
   return arr.map(p =>
-    typeof p === 'string' ? { name: p, logo: null } : (p || { name: '', logo: null })
+    typeof p === 'string' 
+      ? { name: p, logo: null, url: '' } 
+      : { name: p?.name || '', logo: p?.logo || null, url: p?.url || '' }
   );
 }
 
@@ -476,8 +478,8 @@ function renderPartners() {
 
 function createPartnerRow(partner, idx) {
   // partner = { name, logo } atau string (lama)
-  if (typeof partner === 'string') partner = { name: partner, logo: null };
-  const { name = '', logo = null } = partner;
+  if (typeof partner === 'string') partner = { name: partner, logo: null, url: '' };
+  const { name = '', logo = null, url = '' } = partner;
 
   const row = document.createElement('div');
   row.className = 'partner-row partner-row-v2';
@@ -515,7 +517,10 @@ function createPartnerRow(partner, idx) {
       ${logo ? '<button class="btn-remove-logo" type="button" title="Hapus Logo">✕</button>' : ''}
     </div>
 
-    <input type="text" class="partner-name-input" value="${escapeHtml(name)}" placeholder="Nama partner" aria-label="Nama partner ${idx + 1}" />
+    <div class="partner-inputs">
+      <input type="text" class="partner-name-input" value="${escapeHtml(name)}" placeholder="Nama partner" aria-label="Nama partner ${idx + 1}" />
+      <input type="url" class="partner-url-input" value="${escapeHtml(url)}" placeholder="https://website-partner.com" aria-label="Website partner ${idx + 1}" />
+    </div>
 
     <button class="btn-remove" title="Hapus partner" aria-label="Hapus ${escapeHtml(name)}">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
@@ -653,9 +658,11 @@ function syncPartnersFromDOM() {
   data.partners = Array.from(list.querySelectorAll('.partner-row')).map((row, i) => {
     row.dataset.idx = i;
     const nameEl = row.querySelector('.partner-name-input');
+    const urlEl = row.querySelector('.partner-url-input');
     if (nameEl) nameEl.setAttribute('aria-label', `Nama partner ${i + 1}`);
     return {
       name: nameEl ? nameEl.value : '',
+      url: urlEl ? urlEl.value : '',
       logo: row.dataset.logo || null,
     };
   });
@@ -663,7 +670,7 @@ function syncPartnersFromDOM() {
 
 document.getElementById('add-partner-btn').addEventListener('click', () => {
   syncPartnersFromDOM();
-  data.partners.push({ name: '', logo: null });
+  data.partners.push({ name: '', logo: null, url: '' });
   renderPartners();
   const inputs = document.querySelectorAll('#partners-list .partner-name-input');
   if (inputs.length) inputs[inputs.length - 1].focus();

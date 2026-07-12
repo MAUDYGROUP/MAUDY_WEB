@@ -172,16 +172,18 @@
     const track = document.querySelector('.marquee-track');
     if (track) {
       const partners = cms.partners.filter(p => p && (typeof p === 'string' ? p.trim() : p.name));
-      const normalized = partners.map(p => typeof p === 'string' ? { name: p, logo: null } : p);
+      const normalized = partners.map(p => typeof p === 'string' ? { name: p, logo: null, url: '' } : { ...p, url: p.url || '' });
       const doubled = [...normalized, ...normalized];
       track.innerHTML = doubled.map(p => {
+        const tag = p.url ? 'a' : 'div';
+        const hrefAttr = p.url ? ` href="${p.url}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; cursor:pointer;"` : '';
         if (p.logo) {
-          return `<div class="partner-logo">
+          return `<${tag}${hrefAttr} class="partner-logo">
             <img class="partner-img" src="${p.logo}" alt="${p.name}" draggable="false" data-no-protect="true" loading="lazy" />
             <span>${p.name}</span>
-          </div>`;
+          </${tag}>`;
         }
-        return `<div class="partner-logo">${p.name}</div>`;
+        return `<${tag}${hrefAttr} class="partner-logo">${p.name}</${tag}>`;
       }).join('');
     }
   }
