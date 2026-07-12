@@ -930,7 +930,22 @@ function renderPortfolioMarquee(filter = 'all') {
       });
     }
   });
-
+  // Jika tidak ada sama sekali yang ditandai sebagai unggulan, gunakan semua foto sebagai fallback
+  if (featuredPhotos.length === 0) {
+    projects.forEach(p => {
+      if (p.photos) {
+        p.photos.forEach(ph => {
+          featuredPhotos.push({
+            category: p.category || 'Lainnya',
+            image: ph.image,
+            title: p.title || 'Proyek Tanpa Judul',
+            client: p.client || '',
+            desc: ph.caption || p.description || ''
+          });
+        });
+      }
+    });
+  }
   // Kumpulkan kategori unik untuk filter
   const categories = [...new Set(featuredPhotos.map(f => f.category))];
   
