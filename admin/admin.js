@@ -848,7 +848,9 @@ function renderServices() {
       </td>
       <td><strong>${escapeHtml(s.title_id)}</strong></td>
       <td style="color:var(--text2);font-size:.875rem;">${escapeHtml(s.desc_id)}</td>
-      <td style="text-align:right">
+      <td style="text-align:right; white-space:nowrap;">
+        <button class="btn-up" data-i="${idx}" title="Geser ke Atas" ${idx === 0 ? 'disabled' : ''}>⬆️</button>
+        <button class="btn-down" data-i="${idx}" title="Geser ke Bawah" ${idx === data.services.length - 1 ? 'disabled' : ''}>⬇️</button>
         <button class="btn-edit" data-i="${idx}" title="Edit Layanan">✏️</button>
         <button class="btn-remove" data-i="${idx}" title="Hapus Layanan">🗑️</button>
       </td>
@@ -856,14 +858,38 @@ function renderServices() {
     tbody.appendChild(tr);
   });
 
+  tbody.querySelectorAll('.btn-up').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const idx = parseInt(btn.dataset.i);
+      if (idx > 0) {
+        [data.services[idx - 1], data.services[idx]] = [data.services[idx], data.services[idx - 1]];
+        renderServices();
+        await saveData(data);
+      }
+    });
+  });
+
+  tbody.querySelectorAll('.btn-down').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const idx = parseInt(btn.dataset.i);
+      if (idx < data.services.length - 1) {
+        [data.services[idx], data.services[idx + 1]] = [data.services[idx + 1], data.services[idx]];
+        renderServices();
+        await saveData(data);
+      }
+    });
+  });
+
   tbody.querySelectorAll('.btn-edit').forEach(btn => {
     btn.addEventListener('click', () => openServiceForm(parseInt(btn.dataset.i)));
   });
+  
   tbody.querySelectorAll('.btn-remove').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       if (confirm('Yakin ingin menghapus layanan ini?')) {
         data.services.splice(parseInt(btn.dataset.i), 1);
         renderServices();
+        await saveData(data);
       }
     });
   });
