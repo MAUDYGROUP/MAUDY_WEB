@@ -70,11 +70,11 @@
     if (stg.logo) {
       // Navbar Logo
       document.querySelectorAll('.nav-brand').forEach(brand => {
-        brand.innerHTML = `<img src="${stg.logo}" alt="Logo" style="height: 38px; object-fit: contain;">`;
+        brand.innerHTML = `<img src="${stg.logo}" alt="Logo" style="height: 42px !important; max-height: 42px !important; width: auto !important; max-width: 250px !important; object-fit: contain !important; display: block !important; margin: 0 !important; padding: 0 !important;">`;
       });
       // Loader Logo
       document.querySelectorAll('.loader-logo').forEach(loader => {
-        loader.innerHTML = `<img src="${stg.logo}" alt="Logo" style="height: 48px; object-fit: contain;">`;
+        loader.innerHTML = `<img src="${stg.logo}" alt="Logo" style="height: 60px !important; max-height: 60px !important; width: auto !important; max-width: 300px !important; object-fit: contain !important; display: block !important; margin: 0 auto !important;">`;
       });
     }
     
