@@ -2059,30 +2059,56 @@ document.querySelectorAll('.nav-item').forEach(item => {
 });
 
 // Settings Media Listeners
-document.getElementById('set-favicon')?.addEventListener('change', e => {
+// Settings Media Listeners
+function processImageToWebP(file, maxWidth, maxHeight) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        
+        // Calculate new dimensions maintaining aspect ratio
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width = width * ratio;
+          height = height * ratio;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to WebP
+        resolve(canvas.toDataURL('image/webp', 0.9));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('set-favicon')?.addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const base64 = evt.target.result;
-    data.settings = data.settings || {};
-    data.settings.favicon = base64;
-    document.getElementById('set-favicon-preview').src = base64;
-    document.getElementById('favicon-preview-wrap').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
+  // Convert and resize favicon (max 64x64)
+  const webpBase64 = await processImageToWebP(file, 64, 64);
+  data.settings = data.settings || {};
+  data.settings.favicon = webpBase64;
+  document.getElementById('set-favicon-preview').src = webpBase64;
+  document.getElementById('favicon-preview-wrap').style.display = 'block';
 });
 
-document.getElementById('set-logo')?.addEventListener('change', e => {
+document.getElementById('set-logo')?.addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const base64 = evt.target.result;
-    data.settings = data.settings || {};
-    data.settings.logo = base64;
-    document.getElementById('set-logo-preview').src = base64;
-    document.getElementById('logo-preview-wrap').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
+  // Convert and resize logo (max 512x512, enough for navbar)
+  const webpBase64 = await processImageToWebP(file, 512, 512);
+  data.settings = data.settings || {};
+  data.settings.logo = webpBase64;
+  document.getElementById('set-logo-preview').src = webpBase64;
+  document.getElementById('logo-preview-wrap').style.display = 'block';
 });
