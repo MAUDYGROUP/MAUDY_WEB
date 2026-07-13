@@ -68,7 +68,14 @@
       link.href = stg.favicon;
     }
     if (stg.logo) {
-      document.querySelectorAll('.navbar-brand img, .loader-logo img').forEach(el => el.src = stg.logo);
+      // Navbar Logo
+      document.querySelectorAll('.nav-brand').forEach(brand => {
+        brand.innerHTML = `<img src="${stg.logo}" alt="Logo" style="height: 38px; object-fit: contain;">`;
+      });
+      // Loader Logo
+      document.querySelectorAll('.loader-logo').forEach(loader => {
+        loader.innerHTML = `<img src="${stg.logo}" alt="Logo" style="height: 48px; object-fit: contain;">`;
+      });
     }
     
     // Inject custom colors if provided
