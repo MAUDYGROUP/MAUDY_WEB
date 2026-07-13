@@ -726,8 +726,9 @@
               </div>
               <div class="field-group">
                 <label for="svc-color">Warna Ikon (Hex)</label>
-                <div class="input-wrap">
-                  <input type="text" id="svc-color" placeholder="#2563EB" />
+                <div class="input-wrap" style="display: flex; gap: 8px; align-items: center;">
+                  <input type="color" id="svc-color-picker" style="width: 40px; height: 38px; padding: 0; border: none; cursor: pointer; border-radius: 4px; background: transparent;" oninput="document.getElementById('svc-color').value = this.value.toUpperCase()" />
+                  <input type="text" id="svc-color" placeholder="#2563EB" style="flex: 1;" oninput="document.getElementById('svc-color-picker').value = this.value" />
                 </div>
               </div>
               <div class="field-group span-2">
