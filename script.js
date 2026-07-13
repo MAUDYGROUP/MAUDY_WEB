@@ -731,8 +731,10 @@ function initServices() {
                      `</ul>`;
     }
 
+    const linkAttr = s.link ? ` onclick="window.location.href='${s.link}'" style="cursor:pointer;" title="Buka ${title}"` : '';
+
     return `
-      <article class="service-card" data-animate="fade-up" data-delay="${i * 100}">
+      <article class="service-card" data-animate="fade-up" data-delay="${i * 100}"${linkAttr}>
         <div class="service-icon" style="--icon-color:${s.color || '#2563EB'}">
           ${s.icon || ''}
         </div>

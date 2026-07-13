@@ -881,6 +881,7 @@ function openServiceForm(idx = -1) {
     const s = data.services[idx];
     document.getElementById('svc-icon').value = s.icon || '';
     document.getElementById('svc-color').value = s.color || '#2563EB';
+    document.getElementById('svc-link').value = s.link || '';
     document.getElementById('svc-title-id').value = s.title_id || '';
     document.getElementById('svc-desc-id').value = s.desc_id || '';
     document.getElementById('svc-features-id').value = (s.features_id || []).join('\n');
@@ -888,6 +889,7 @@ function openServiceForm(idx = -1) {
     titleEl.textContent = '📝 Tambah Layanan';
     document.getElementById('svc-icon').value = '';
     document.getElementById('svc-color').value = '#2563EB';
+    document.getElementById('svc-link').value = '';
     document.getElementById('svc-title-id').value = '';
     document.getElementById('svc-desc-id').value = '';
     document.getElementById('svc-features-id').value = '';
@@ -925,7 +927,8 @@ document.getElementById('svc-form-save')?.addEventListener('click', async () => 
     desc_id: document.getElementById('svc-desc-id').value.trim(),
     features_id: features,
     icon: document.getElementById('svc-icon').value.trim(),
-    color: document.getElementById('svc-color').value.trim() || '#2563EB'
+    color: document.getElementById('svc-color').value.trim() || '#2563EB',
+    link: document.getElementById('svc-link').value.trim()
   };
 
   if (svcEditIdx >= 0) {
