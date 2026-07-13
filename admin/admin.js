@@ -2064,6 +2064,12 @@ function processImageToWebP(file, maxWidth, maxHeight) {
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (e) => {
+      // Jika file adalah GIF, langsung kembalikan base64 aslinya untuk menjaga animasi
+      if (file.type === 'image/gif') {
+        resolve(e.target.result);
+        return;
+      }
+
       const img = new Image();
       img.onload = () => {
         let width = img.width;
