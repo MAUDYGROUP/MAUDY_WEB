@@ -13,6 +13,19 @@ const AUTH_KEY    = 'maudy_admin_auth';
 const SESSION_KEY = 'maudy_admin_session';
 
 const DEFAULT_DATA = {
+  settings: {
+    web_title: 'MAUDY IT Solution',
+    favicon: '',
+    logo: '',
+    color_primary: '#0052CC',
+    color_primary_hover: '#0043A6',
+    color_accent: '#059669',
+    title_services: 'LAYANAN KAMI',
+    title_whyus: 'MENGAPA KAMI',
+    title_portfolio: 'PORTOFOLIO',
+    title_industries: 'INDUSTRI',
+    title_testimonials: 'TESTIMONI'
+  },
   contact: {
     whatsapp: '6281234567890',
     phone:    '+62 812-3456-7890',
@@ -431,6 +444,34 @@ sidebarToggle.addEventListener('click', () => {
 // POPULATE FORMS
 // ============================================================
 function populateForms() {
+  // Settings
+  const stg = data.settings || DEFAULT_DATA.settings;
+  setVal('set-web-title', stg.web_title);
+  setVal('set-color-primary', stg.color_primary);
+  setVal('set-color-primary-picker', stg.color_primary);
+  setVal('set-color-primary-hover', stg.color_primary_hover);
+  setVal('set-color-hover-picker', stg.color_primary_hover);
+  setVal('set-color-accent', stg.color_accent);
+  setVal('set-color-accent-picker', stg.color_accent);
+  setVal('set-title-services', stg.title_services);
+  setVal('set-title-whyus', stg.title_whyus);
+  setVal('set-title-portfolio', stg.title_portfolio);
+  setVal('set-title-industries', stg.title_industries);
+  setVal('set-title-testimonials', stg.title_testimonials);
+
+  if (stg.favicon) {
+    const wrap = document.getElementById('favicon-preview-wrap');
+    const img = document.getElementById('set-favicon-preview');
+    wrap.style.display = 'block';
+    img.src = stg.favicon;
+  }
+  if (stg.logo) {
+    const wrap = document.getElementById('logo-preview-wrap');
+    const img = document.getElementById('set-logo-preview');
+    wrap.style.display = 'block';
+    img.src = stg.logo;
+  }
+
   // Contact
   const c = data.contact;
   setVal('c-whatsapp', c.whatsapp);
@@ -1001,6 +1042,18 @@ saveAllBtn.addEventListener('click', async () => {
 });
 
 function collectFormData() {
+  // Settings
+  data.settings = data.settings || {};
+  data.settings.web_title = getVal('set-web-title') || 'MAUDY IT Solution';
+  data.settings.color_primary = getVal('set-color-primary') || '#0052CC';
+  data.settings.color_primary_hover = getVal('set-color-primary-hover') || '#0043A6';
+  data.settings.color_accent = getVal('set-color-accent') || '#059669';
+  data.settings.title_services = getVal('set-title-services') || 'LAYANAN KAMI';
+  data.settings.title_whyus = getVal('set-title-whyus') || 'MENGAPA KAMI';
+  data.settings.title_portfolio = getVal('set-title-portfolio') || 'PORTOFOLIO';
+  data.settings.title_industries = getVal('set-title-industries') || 'INDUSTRI';
+  data.settings.title_testimonials = getVal('set-title-testimonials') || 'TESTIMONI';
+  
   // Contact
   data.contact = {
     whatsapp: getVal('c-whatsapp'),
@@ -2003,4 +2056,33 @@ document.querySelectorAll('.nav-item').forEach(item => {
       setTimeout(initWMPanel, 100); // tunggu panel aktif
     }
   });
+});
+
+// Settings Media Listeners
+document.getElementById('set-favicon')?.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const base64 = evt.target.result;
+    data.settings = data.settings || {};
+    data.settings.favicon = base64;
+    document.getElementById('set-favicon-preview').src = base64;
+    document.getElementById('favicon-preview-wrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('set-logo')?.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const base64 = evt.target.result;
+    data.settings = data.settings || {};
+    data.settings.logo = base64;
+    document.getElementById('set-logo-preview').src = base64;
+    document.getElementById('logo-preview-wrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
 });

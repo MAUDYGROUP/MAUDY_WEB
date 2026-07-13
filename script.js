@@ -54,6 +54,44 @@
     }
   };
 
+  // ---- 0.5 SETTINGS ----
+  if (cms.settings) {
+    const stg = cms.settings;
+    if (stg.web_title) document.title = stg.web_title;
+    if (stg.favicon) {
+      let link = document.querySelector("link[rel~='icon']");
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = stg.favicon;
+    }
+    if (stg.logo) {
+      document.querySelectorAll('.navbar-brand img, .loader-logo img').forEach(el => el.src = stg.logo);
+    }
+    
+    // Inject custom colors if provided
+    if (stg.color_primary || stg.color_primary_hover || stg.color_accent) {
+      const style = document.createElement('style');
+      style.innerHTML = `
+        :root, [data-theme="light"], [data-theme="dark"] {
+          ${stg.color_primary ? `--color-primary: ${stg.color_primary} !important;` : ''}
+          ${stg.color_primary_hover ? `--color-primary-hover: ${stg.color_primary_hover} !important;` : ''}
+          ${stg.color_accent ? `--color-accent: ${stg.color_accent} !important;` : ''}
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Set section titles
+    if (stg.title_services) setI18n('services_badge', stg.title_services);
+    if (stg.title_whyus) setI18n('why_badge', stg.title_whyus);
+    if (stg.title_portfolio) setI18n('portfolio_badge', stg.title_portfolio);
+    if (stg.title_industries) setI18n('industries_badge', stg.title_industries);
+    if (stg.title_testimonials) setI18n('testi_badge', stg.title_testimonials);
+  }
+
   // ---- 1. CONTACT ----
   if (cms.contact) {
     const c = cms.contact;
