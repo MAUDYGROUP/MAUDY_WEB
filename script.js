@@ -203,6 +203,9 @@
     if (typeof initTestimonials === 'function') initTestimonials();
     if (typeof initCertifications === 'function') initCertifications();
     if (typeof initPortfolioFilter === 'function') initPortfolioFilter();
+    
+    // Re-run observer to catch any newly created elements (services, etc.)
+    if (typeof initScrollAnimations === 'function') initScrollAnimations();
   };
 
   if (document.readyState === 'loading') {
@@ -557,7 +560,7 @@ function initBackToTop() {
    9. SCROLL ANIMATIONS (Intersection Observer)
    ============================================================ */
 function initScrollAnimations() {
-  const els = document.querySelectorAll('[data-animate]');
+  const els = document.querySelectorAll('[data-animate]:not(.is-observed)');
   if (!els.length) return;
 
   const observer = new IntersectionObserver((entries) => {
@@ -570,7 +573,10 @@ function initScrollAnimations() {
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-  els.forEach(el => observer.observe(el));
+  els.forEach(el => {
+    el.classList.add('is-observed');
+    observer.observe(el);
+  });
 }
 
 /* ============================================================
@@ -1227,6 +1233,9 @@ function applyLanguage(lang, animate = true) {
   if (typeof initServices === 'function') initServices();
   if (typeof initTestimonials === 'function') initTestimonials();
   if (typeof initPortfolioFilter === 'function') initPortfolioFilter(); // Re-render portfolio texts if needed (optional)
+  
+  // Re-run observer to catch any newly created elements after re-rendering
+  if (typeof initScrollAnimations === 'function') initScrollAnimations();
 
   // Update lang toggle button
   const btn = document.getElementById('lang-toggle');
