@@ -471,7 +471,7 @@ function populateForms() {
   renderCertificates();
   renderTestimonials();
   renderServices();
-  renderDocProjects();
+  renderDocList();
 }
 
 function setVal(id, val) {
