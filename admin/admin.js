@@ -130,6 +130,50 @@ const DEFAULT_DATA = {
       published: true,
       updatedAt: new Date().toISOString()
     }
+  ],
+  services: [
+    {
+      title_id: 'Hardware & Repair',
+      desc_id: 'Service & sparepart komputer/laptop, instalasi sistem operasi Windows & Linux, jual komputer & laptop baru.',
+      features_id: ['Service & Sparepart Komputer', 'Jual Komputer & Laptop', 'Instalasi OS Windows & Linux'],
+      icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+      color: '#2563EB'
+    },
+    {
+      title_id: 'Networking & Infrastruktur',
+      desc_id: 'Instalasi jaringan komputer, konfigurasi Mikrotik, wireless, fiber optic, dan internet broadband.',
+      features_id: ['Instalasi Jaringan Komputer', 'Setting Mikrotik', 'Wireless & Fiber Optic', 'Instalasi Internet'],
+      icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 8a6 6 0 0112 0c0 6 3 8 3 8H3s3-2 3-8"/><path d="M21 16H3"/><circle cx="12" cy="2" r="1"/></svg>',
+      color: '#0EA5E9'
+    },
+    {
+      title_id: 'Software & Web Development',
+      desc_id: 'Pembuatan website profesional, pengembangan software custom, dan sistem informasi sesuai kebutuhan bisnis.',
+      features_id: ['Pembuatan Website', 'Software Development', 'Pembuatan Sistem Informasi'],
+      icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+      color: '#8B5CF6'
+    },
+    {
+      title_id: 'Cloud & Server',
+      desc_id: 'Setup & maintenance VPS, instalasi server, cloud hosting, virtualisasi, dan backup data terpusat.',
+      features_id: ['Setup VPS & Cloud Server', 'Instalasi & Maintenance Server', 'IP Public & VPN IP'],
+      icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>',
+      color: '#22D3EE'
+    },
+    {
+      title_id: 'Keamanan & CCTV',
+      desc_id: 'Instalasi CCTV, sistem keamanan gedung, access control, dan solusi keamanan digital terpadu.',
+      features_id: ['Instalasi CCTV', 'Security System', 'Access Control'],
+      icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+      color: '#EF4444'
+    },
+    {
+      title_id: 'IT Maintenance',
+      desc_id: 'Kontrak maintenance rutin untuk memastikan seluruh infrastruktur IT perusahaan Anda berjalan optimal tanpa kendala.',
+      features_id: ['Maintenance Rutin', 'IT Support On-call', 'Pengecekan Berkala'],
+      icon: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+      color: '#F59E0B'
+    }
   ]
 };
 
@@ -424,12 +468,10 @@ function populateForms() {
 
   // Partners
   renderPartners();
-
-  // Testimonials
-  renderTestimonials();
-
-  // Certificates
   renderCertificates();
+  renderTestimonials();
+  renderServices();
+  renderDocProjects();
 }
 
 function setVal(id, val) {
@@ -780,6 +822,133 @@ document.getElementById('add-testi-btn').addEventListener('click', () => {
   renderTestimonials();
   const rows = document.querySelectorAll('.testi-row');
   if (rows.length) rows[rows.length - 1].querySelector('input').focus();
+});
+
+// ============================================================
+// SERVICES
+// ============================================================
+let svcEditIdx = -1;
+
+function renderServices() {
+  const tbody = document.getElementById('services-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!data.services || data.services.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:2rem;">Belum ada layanan.</td></tr>`;
+    return;
+  }
+  
+  data.services.forEach((s, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div style="width:32px;height:32px;color:${s.color || 'var(--accent)'};">
+          ${s.icon}
+        </div>
+      </td>
+      <td><strong>${escapeHtml(s.title_id)}</strong></td>
+      <td style="color:var(--text2);font-size:.875rem;">${escapeHtml(s.desc_id)}</td>
+      <td style="text-align:right">
+        <button class="btn-edit" data-i="${idx}" title="Edit Layanan">✏️</button>
+        <button class="btn-remove" data-i="${idx}" title="Hapus Layanan">🗑️</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', () => openServiceForm(parseInt(btn.dataset.i)));
+  });
+  tbody.querySelectorAll('.btn-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (confirm('Yakin ingin menghapus layanan ini?')) {
+        data.services.splice(parseInt(btn.dataset.i), 1);
+        renderServices();
+      }
+    });
+  });
+}
+
+function openServiceForm(idx = -1) {
+  svcEditIdx = idx;
+  const formEl = document.getElementById('service-form');
+  const titleEl = document.getElementById('service-form-title');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  formEl.classList.add('active');
+
+  if (idx >= 0) {
+    titleEl.textContent = '✏️ Edit Layanan';
+    const s = data.services[idx];
+    document.getElementById('svc-icon').value = s.icon || '';
+    document.getElementById('svc-color').value = s.color || '#2563EB';
+    document.getElementById('svc-title-id').value = s.title_id || '';
+    document.getElementById('svc-desc-id').value = s.desc_id || '';
+    document.getElementById('svc-features-id').value = (s.features_id || []).join('\n');
+  } else {
+    titleEl.textContent = '📝 Tambah Layanan';
+    document.getElementById('svc-icon').value = '';
+    document.getElementById('svc-color').value = '#2563EB';
+    document.getElementById('svc-title-id').value = '';
+    document.getElementById('svc-desc-id').value = '';
+    document.getElementById('svc-features-id').value = '';
+  }
+  document.getElementById('svc-form-status').style.display = 'none';
+}
+
+function closeServiceForm() {
+  document.getElementById('service-form').classList.remove('active');
+  document.getElementById('tab-services').classList.add('active');
+  svcEditIdx = -1;
+}
+
+document.getElementById('svc-form-save')?.addEventListener('click', async () => {
+  const titleId = document.getElementById('svc-title-id').value.trim();
+  const statusEl = document.getElementById('svc-form-status');
+  statusEl.style.display = 'none';
+
+  if (!titleId) {
+    statusEl.className = 'form-status error';
+    statusEl.textContent = 'Judul layanan wajib diisi.';
+    statusEl.style.display = 'block';
+    return;
+  }
+
+  if (!data.services) data.services = [];
+
+  const features = document.getElementById('svc-features-id').value
+    .split(/\r?\n|,/)
+    .map(f => f.trim())
+    .filter(f => f.length > 0);
+
+  const svc = {
+    title_id: titleId,
+    desc_id: document.getElementById('svc-desc-id').value.trim(),
+    features_id: features,
+    icon: document.getElementById('svc-icon').value.trim(),
+    color: document.getElementById('svc-color').value.trim() || '#2563EB'
+  };
+
+  if (svcEditIdx >= 0) {
+    data.services[svcEditIdx] = svc;
+  } else {
+    data.services.push(svc);
+  }
+
+  const btn = document.getElementById('svc-form-save');
+  btn.disabled = true;
+  btn.textContent = 'Menyimpan...';
+  
+  const success = await saveData(data);
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Simpan Layanan`;
+
+  if (success) {
+    showToast('✅ Layanan berhasil disimpan', 'success');
+    renderServices();
+    closeServiceForm();
+  } else {
+    showToast('❌ Gagal menyimpan', 'error');
+  }
 });
 
 // ============================================================

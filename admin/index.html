@@ -130,6 +130,12 @@
           </svg>
           Profil Perusahaan
         </button>
+        <button class="nav-item" data-tab="services">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>
+          Layanan
+        </button>
         <button class="nav-item" data-tab="social">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="18" cy="5" r="3" />
@@ -451,6 +457,38 @@
           </div>
         </section>
 
+        <!-- ===== LAYANAN ===== -->
+        <section id="tab-services" class="tab-panel">
+          <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <h2>🛠️ Layanan Kami</h2>
+              <p>Kelola daftar layanan yang ditawarkan oleh perusahaan.</p>
+            </div>
+            <button class="btn-primary" type="button" onclick="openServiceForm()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Tambah Layanan
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th width="50">Ikon</th>
+                  <th>Nama Layanan</th>
+                  <th>Deskripsi Singkat</th>
+                  <th width="120" style="text-align:right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="services-tbody">
+                <!-- Diisi via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <!-- ===== MEDIA SOSIAL ===== -->
         <section id="tab-social" class="tab-panel">
           <div class="page-header">
@@ -664,6 +702,62 @@
                 </button>
                 <button id="doc-form-cancel2" type="button" class="btn-secondary">Batal</button>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== FORM LAYANAN (Modal) ===== -->
+        <section id="service-form" class="tab-panel" hidden>
+          <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <h2 id="service-form-title">📝 Tambah Layanan</h2>
+              <p>Isi form di bawah ini untuk layanan.</p>
+            </div>
+            <button class="btn-secondary" type="button" onclick="closeServiceForm()">
+              Kembali
+            </button>
+          </div>
+          <div class="card-form">
+            <div class="form-grid">
+              <div class="field-group span-2">
+                <label for="svc-icon">Ikon (SVG HTML)</label>
+                <div class="input-wrap">
+                  <textarea id="svc-icon" rows="3" placeholder="<svg>...</svg>"></textarea>
+                </div>
+              </div>
+              <div class="field-group">
+                <label for="svc-color">Warna Ikon (Hex)</label>
+                <div class="input-wrap">
+                  <input type="text" id="svc-color" placeholder="#2563EB" />
+                </div>
+              </div>
+              <div class="field-group span-2">
+                <label for="svc-title-id">Judul Layanan (ID) <span style="color:var(--danger)">*</span></label>
+                <div class="input-wrap">
+                  <input type="text" id="svc-title-id" placeholder="Misal: Hardware & Repair" />
+                </div>
+              </div>
+              <div class="field-group span-2">
+                <label for="svc-desc-id">Deskripsi Layanan (ID)</label>
+                <div class="input-wrap">
+                  <textarea id="svc-desc-id" rows="2" placeholder="Deskripsi singkat..."></textarea>
+                </div>
+              </div>
+              <div class="field-group span-2">
+                <label for="svc-features-id">Fitur Layanan (ID) <span style="color:var(--text3);font-weight:400;font-size:12px;margin-left:8px">Pisahkan dengan koma atau baris baru</span></label>
+                <div class="input-wrap">
+                  <textarea id="svc-features-id" rows="3" placeholder="Fitur 1, Fitur 2, Fitur 3"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div id="svc-form-status" class="form-status" style="display:none;margin-top:.75rem"></div>
+            <div style="display:flex;gap:.75rem;margin-top:1.25rem">
+              <button id="svc-form-save" class="btn-save" type="button">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Simpan Layanan
+              </button>
+              <button type="button" class="btn-secondary" onclick="closeServiceForm()">Batal</button>
             </div>
           </div>
         </section>

@@ -199,6 +199,7 @@
   
   // Re-initialize components that depend on CMS data now that the data is loaded
   const initCMSComponents = () => {
+    if (typeof initServices === 'function') initServices();
     if (typeof initTestimonials === 'function') initTestimonials();
     if (typeof initCertifications === 'function') initCertifications();
     if (typeof initPortfolioFilter === 'function') initPortfolioFilter();
@@ -697,6 +698,47 @@ function initCounters() {
 }
 
 /* ============================================================
+   11.5 SERVICES
+   ============================================================ */
+function initServices() {
+  const container = document.getElementById('services-grid');
+  if (!container) return;
+  const cms = window._CMS_DATA || {};
+  let services = cms.services || [];
+  
+  if (services.length === 0) {
+    container.innerHTML = `<div style="text-align:center;width:100%;color:var(--text3);padding:2rem;">Belum ada layanan.</div>`;
+    return;
+  }
+  
+  const lang = currentLang || 'id';
+  
+  container.innerHTML = services.map((s, i) => {
+    const title = lang === 'en' && s.title_en ? s.title_en : (s.title_id || '');
+    const desc = lang === 'en' && s.desc_en ? s.desc_en : (s.desc_id || '');
+    const features = lang === 'en' && s.features_en ? s.features_en : (s.features_id || []);
+    
+    let featuresHTML = '';
+    if (features.length > 0) {
+      featuresHTML = `<ul class="service-list" aria-label="Layanan ${title}">` + 
+                     features.map(f => `<li>${f}</li>`).join('') + 
+                     `</ul>`;
+    }
+
+    return `
+      <article class="service-card" data-animate="fade-up" data-delay="${i * 100}">
+        <div class="service-icon" style="--icon-color:${s.color || '#2563EB'}">
+          ${s.icon || ''}
+        </div>
+        <h3 data-i18n="svc_title_${i}">${title}</h3>
+        <p data-i18n="svc_desc_${i}">${desc}</p>
+        ${featuresHTML}
+      </article>
+    `;
+  }).join('');
+}
+
+/* ============================================================
    12. TESTIMONIALS CAROUSEL
    ============================================================ */
 function initTestimonials() {
@@ -1181,6 +1223,10 @@ function applyLanguage(lang, animate = true) {
       if (cms.social.linkedin  && cms.social.linkedin  !== '#') setHref('[aria-label*="LinkedIn"]', cms.social.linkedin);
     }
   }
+  
+  if (typeof initServices === 'function') initServices();
+  if (typeof initTestimonials === 'function') initTestimonials();
+  if (typeof initPortfolioFilter === 'function') initPortfolioFilter(); // Re-render portfolio texts if needed (optional)
 
   // Update lang toggle button
   const btn = document.getElementById('lang-toggle');
